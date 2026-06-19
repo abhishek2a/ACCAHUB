@@ -123,12 +123,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const displayNameElem = document.getElementById('user-display-name');
     const profileNameElem = document.getElementById('profile-name-display');
     const profileInputElem = document.getElementById('profile-name-input');
+    const profileAvatar = document.getElementById('profile-avatar');
     
     const displayName = user.displayName || user.email.split('@')[0];
     
     if(displayNameElem) displayNameElem.textContent = displayName;
     if(profileNameElem) profileNameElem.textContent = displayName;
     if(profileInputElem) profileInputElem.value = displayName;
+    if(profileAvatar) {
+      // Get up to two initials
+      const initials = displayName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      profileAvatar.textContent = initials || 'U';
+    }
     
     // Fetch Firestore Data
     try {

@@ -1,30 +1,38 @@
-@import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
   --acca-red: #cc0000;
+  --acca-red-gradient: linear-gradient(135deg, #cc0000, #ff1a1a);
+  --btn-text: #ffffff;
   --acca-dark: #111111;
-  --text-main: #1f2937;
+  --text-main: #111827;
   --text-light: #6b7280;
   --border-color: #e5e7eb;
   --bg-main: #ffffff;
   --bg-alt: #ffffff;
   --panel-bg: #ffffff;
+  --hover-bg: #ececec;
   --cbe-header: #000000;
-  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+  --shadow-card-hover: 0 12px 24px rgba(0, 0, 0, 0.08), 0 4px 8px rgba(0, 0, 0, 0.04);
   
-  --font-main: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+  --font-main: "Inter", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
 }
 
 [data-theme="dark"] {
   --acca-dark: #ffffff;
+  --acca-red-gradient: linear-gradient(135deg, #e60000, #ff4d4d);
+  --btn-text: #ffffff;
   --text-main: #f9fafb;
   --text-light: #9ca3af;
   --border-color: #222222;
   --bg-main: #000000;
   --bg-alt: #0a0a0a;
   --panel-bg: #0a0a0a;
+  --hover-bg: #1a1a1a;
   --cbe-header: #000000;
   --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --shadow-card-hover: 0 12px 24px -4px rgba(0, 0, 0, 0.8);
 }
 
 * {
@@ -60,7 +68,7 @@ body {
 
 .acca-logo-box {
   background-color: var(--acca-red);
-  color: white;
+  color: var(--btn-text);
   display: inline-block;
   padding: 8px 10px;
   font-weight: 700;
@@ -118,20 +126,19 @@ body {
 
 .input-group input {
   width: 100%;
-  padding: 12px 14px;
+  padding: 14px 16px;
   border: 1px solid var(--border-color);
   font-family: inherit;
-  font-size: 14px;
+  font-size: 15px;
   outline: none;
-  transition: all 0.3s ease;
-  border-radius: 4px;
   background-color: transparent;
   color: var(--text-main);
+  border-radius: 6px;
+  transition: all 0.2s ease;
 }
-
-.input-group input:focus {
-  border-color: var(--acca-red);
-  box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1);
+.input-group input:focus { 
+  border-color: var(--acca-red); 
+  box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.15);
 }
 
 .eye-icon {
@@ -171,11 +178,15 @@ body {
 }
 
 .sign-in-btn.active {
-  background-color: var(--acca-red);
-  color: white;
+  background: var(--acca-red-gradient);
+  color: var(--btn-text);
   cursor: pointer;
+  box-shadow: 0 4px 6px rgba(204, 0, 0, 0.2);
 }
-.sign-in-btn.active:hover { background-color: #a80000; }
+.sign-in-btn.active:hover { 
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(204, 0, 0, 0.3);
+}
 
 /* --- ACCA Study Hub Layout (Sidebar + Content) --- */
 #dashboard-screen, #analytics-screen {
@@ -210,14 +221,18 @@ body {
   text-decoration: none;
   font-size: 15px;
   border-left: 4px solid transparent;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .sidebar-nav li a:hover, .sidebar-nav li a.active {
-  background-color: #ececec;
+  background-color: var(--hover-bg);
   border-left-color: var(--acca-red);
   font-weight: 600;
   color: var(--acca-red);
+}
+
+.sidebar-nav li a:hover {
+  padding-left: 35px;
 }
 
 .main-content {
@@ -246,8 +261,13 @@ body {
   border: 1px solid var(--border-color);
   background: var(--panel-bg);
   padding: 30px;
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: var(--shadow-card);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.hub-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card-hover);
 }
 
 .hub-card h3 {
@@ -284,22 +304,27 @@ body {
 .resource-list a.disabled { color: #aaa; cursor: not-allowed; }
 
 .start-btn {
-  background: var(--acca-red);
-  color: white;
+  background: var(--acca-red-gradient);
+  color: var(--btn-text);
   border: none;
-  padding: 10px 20px;
+  padding: 12px 24px;
   cursor: pointer;
   margin-top: 15px;
-  border-radius: 2px;
-  font-size: 14px;
+  border-radius: 6px;
+  font-size: 15px;
   font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(204, 0, 0, 0.2);
 }
-.start-btn:hover { background: #a80000; }
+.start-btn:hover { 
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(204, 0, 0, 0.3);
+}
 
 /* --- ACCA CBE Exam Interface --- */
 #exam-screen {
   min-height: 100vh;
-  background-color: #eaebed; /* Soft grey for testing background */
+  background-color: var(--bg-main);
   display: flex;
   flex-direction: column;
 }
@@ -364,7 +389,7 @@ body {
 
 .cbe-question-box {
   background: var(--panel-bg);
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);
   width: 100%;
   max-width: 950px;
   display: flex;
@@ -377,7 +402,7 @@ body {
   padding: 15px 30px;
   font-weight: 600;
   font-size: 16px;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid var(--border-color);
   color: var(--text-main);
 }
 
@@ -386,7 +411,7 @@ body {
   flex-grow: 1;
   font-family: Arial, Helvetica, sans-serif; /* Authentic exam font */
   font-size: 16px;
-  color: #000;
+  color: var(--text-main);
 }
 
 .cbe-q-text {
@@ -416,7 +441,7 @@ body {
 
 .cbe-bottombar {
   background: var(--bg-alt);
-  border-top: 1px solid #ccc;
+  border-top: 1px solid var(--border-color);
   padding: 15px 30px;
   display: flex;
   justify-content: space-between;
