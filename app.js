@@ -14,6 +14,14 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
+  
+  // Initialize Firebase App Check with reCAPTCHA v3
+  const appCheck = firebase.appCheck();
+  appCheck.activate(
+    '6LcRySgtAAAAADDwDo2z-_MKx5FKaapKYAFhdH8O',
+    true // isTokenAutoRefreshEnabled
+  );
+
   const auth = firebase.auth();
   const db = firebase.firestore();
 
