@@ -95,15 +95,24 @@ document.addEventListener('DOMContentLoaded', () => {
   const highlightTool = document.getElementById('highlight-tool');
   const calcWidget = document.getElementById('calculator-widget');
   const closeCalc = document.getElementById('close-calc');
+  const scratchpadTool = document.getElementById('scratchpad-tool');
+  const scratchpadWidget = document.getElementById('scratchpad-widget');
+  const closeScratchpad = document.getElementById('close-scratchpad');
 
   // Results Output
   const reviewListContainer = document.getElementById('review-list');
 
   // --- State ---
   let currentQuestionIndex = 0;
-  let userAnswers = new Array(questions.length).fill(null);
-  let timerInterval = null;
-  let timeRemaining = 36 * 60; // 36 minutes
+  let userAnswers = [];
+  let userInterpretations = [];
+  let timeRemaining = 36 * 60; // 36 minutes default
+  let timerInterval;
+  let currentMockId = null;
+  let isPracticeMode = false;
+  
+  // Define questions as empty initially, will be populated on startMock
+  let questions = [];
   let isHighlightMode = false;
   let userDataCache = { history: [], topics: {} };
 
@@ -391,14 +400,35 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // --- Exam Logic ---
-  startExamBtn.addEventListener('click', () => {
+  // --- Exam Logic ---
+  window.startMock = function(mockId, practice) {
+    currentMockId = mockId;
+    isPracticeMode = practice;
+    questions = mockExams[mockId];
+    
     currentQuestionIndex = 0;
     userAnswers = new Array(questions.length).fill(null);
-    timeRemaining = 36 * 60;
-    startTimer();
+    userInterpretations = new Array(questions.length).fill('');
+    
+    if (mockId === 'mock-1') {
+      timeRemaining = 36 * 60; // 36 minutes
+    } else if (mockId === 'mock-2') {
+      timeRemaining = 12 * 60; // 12 minutes
+    } else if (mockId === 'mock-3') {
+      timeRemaining = 10 * 60; // 10 minutes
+    }
+    
+    const timerDisplay = document.getElementById('timer-display');
+    if (isPracticeMode) {
+      timerDisplay.textContent = "Practice Mode";
+      clearInterval(timerInterval);
+    } else {
+      startTimer();
+    }
+    
     renderQuestion();
     showScreen('exam');
-  });
+  };
 
   function startTimer() {
     updateTimerDisplay();
@@ -452,6 +482,16 @@ document.addEventListener('DOMContentLoaded', () => {
       optionsContainer.appendChild(optionLabel);
     });
 
+    const interpretationContainer = document.getElementById('practice-interpretation-container');
+    const interpretationInput = document.getElementById('interpretation-input');
+    
+    if (isPracticeMode) {
+      interpretationContainer.classList.remove('hidden');
+      interpretationInput.value = userInterpretations[currentQuestionIndex] || '';
+    } else {
+      interpretationContainer.classList.add('hidden');
+    }
+
     prevBtn.disabled = currentQuestionIndex === 0;
     
     if (currentQuestionIndex === questions.length - 1) {
@@ -461,6 +501,16 @@ document.addEventListener('DOMContentLoaded', () => {
       nextBtn.classList.remove('hidden');
       submitExamBtn.classList.add('hidden');
     }
+  }
+
+  // Save interpretation on input
+  const interpretationInput = document.getElementById('interpretation-input');
+  if (interpretationInput) {
+    interpretationInput.addEventListener('input', () => {
+      if (isPracticeMode) {
+        userInterpretations[currentQuestionIndex] = interpretationInput.value;
+      }
+    });
   }
 
   prevBtn.addEventListener('click', () => {
@@ -528,62 +578,19 @@ document.addEventListener('DOMContentLoaded', () => {
   async function finishExam() {
     clearInterval(timerInterval);
     
+    reviewListContainer.innerHTML = '';
     let correctCount = 0;
     const topicStats = {};
     
     questions.forEach((q, i) => {
-      const isCorrect = userAnswers[i] === q.answer;
-      if (isCorrect) correctCount++;
+      const userAnswer = userAnswers[i];
+      // In practice mode, we evaluate the option correctness, but final mark depends on self-grade
+      const isOptionCorrect = userAnswer === q.answer;
+      if (!isPracticeMode && isOptionCorrect) correctCount++;
       
       if (!topicStats[q.topic]) topicStats[q.topic] = { correct: 0, total: 0 };
       topicStats[q.topic].total++;
-      if (isCorrect) topicStats[q.topic].correct++;
-    });
-    
-    const score = correctCount * 2;
-    const totalScore = questions.length * 2;
-    const percentage = Math.round((correctCount / questions.length) * 100);
-    
-    const mockId = `Mock ${userDataCache.history.length + 1}`;
-    const attemptData = {
-      id: mockId,
-      score: score,
-      percentage: percentage,
-      date: new Date().toLocaleDateString()
-    };
-    
-    // Update local cache
-    userDataCache.history.push(attemptData);
-    
-    Object.keys(topicStats).forEach(topic => {
-      if (!userDataCache.topics[topic]) userDataCache.topics[topic] = { correct: 0, total: 0 };
-      userDataCache.topics[topic].correct += topicStats[topic].correct;
-      userDataCache.topics[topic].total += topicStats[topic].total;
-    });
-    
-    // Save to Firestore
-    const user = auth.currentUser;
-    if (user) {
-      try {
-        submitExamBtn.textContent = 'Saving...';
-        await db.collection("users").doc(user.uid).update({
-          history: firebase.firestore.FieldValue.arrayUnion(attemptData),
-          topics: userDataCache.topics
-        });
-      } catch (err) {
-        console.error("Failed to save mock exam to Firestore", err);
-      } finally {
-        submitExamBtn.textContent = 'Submit Exam';
-      }
-    }
-    
-    document.getElementById('final-score').textContent = `${score}/${totalScore}`;
-    document.getElementById('score-percent').textContent = `${percentage}%`;
-    
-    reviewListContainer.innerHTML = '';
-    questions.forEach((q, i) => {
-      const userAnswer = userAnswers[i];
-      const isCorrect = userAnswer === q.answer;
+      if (!isPracticeMode && isOptionCorrect) topicStats[q.topic].correct++;
       
       const itemDiv = document.createElement('div');
       itemDiv.className = 'review-item';
@@ -592,8 +599,8 @@ document.addEventListener('DOMContentLoaded', () => {
       headerDiv.className = 'review-header';
       headerDiv.innerHTML = `
         <span>Question ${i + 1}</span>
-        <span class="${isCorrect ? 'review-correct' : 'review-incorrect'}">
-          ${isCorrect ? '✓ Correct' : '✗ Incorrect'}
+        <span class="${isOptionCorrect ? 'review-correct' : 'review-incorrect'}">
+          ${isOptionCorrect ? '✓ Option Correct' : '✗ Option Incorrect'}
         </span>
       `;
       itemDiv.appendChild(headerDiv);
@@ -616,14 +623,131 @@ document.addEventListener('DOMContentLoaded', () => {
           optDiv.classList.add('is-user-wrong');
           optDiv.innerHTML += ' <strong>(Your Answer)</strong>';
         }
-        
         itemDiv.appendChild(optDiv);
       });
+
+      // Show interpretation section if exists in mock data
+      if (q.explanation) {
+        const explBtn = document.createElement('button');
+        explBtn.className = 'cbe-nav-btn';
+        explBtn.style.marginTop = '15px';
+        explBtn.textContent = 'View Correct Interpretation';
+        
+        const explDiv = document.createElement('div');
+        explDiv.className = 'hidden';
+        explDiv.style.marginTop = '10px';
+        explDiv.style.padding = '15px';
+        explDiv.style.background = 'var(--bg-main)';
+        explDiv.style.border = '1px solid var(--acca-red)';
+        explDiv.innerHTML = `<strong style="color:var(--acca-red);">Correct Logic:</strong><br><pre style="font-family:inherit; white-space:pre-wrap;">${q.explanation}</pre>`;
+
+        if (isPracticeMode) {
+          explDiv.innerHTML = `
+            <div style="margin-bottom:15px;"><strong>Your Interpretation:</strong><br><pre style="font-family:inherit; white-space:pre-wrap; color:var(--text-light);">${escapeHTML(userInterpretations[i] || 'No interpretation provided.')}</pre></div>
+            ` + explDiv.innerHTML + `
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border-color);">
+              <strong>Self-Grade: Did your interpretation match the correct logic?</strong><br>
+              <label style="margin-right: 15px;"><input type="radio" name="selfgrade-${i}" value="yes"> Yes, my logic was correct</label>
+              <label><input type="radio" name="selfgrade-${i}" value="no" checked> No, I made a mistake</label>
+            </div>
+          `;
+        }
+
+        explBtn.addEventListener('click', () => {
+          explDiv.classList.toggle('hidden');
+          explBtn.textContent = explDiv.classList.contains('hidden') ? 'View Correct Interpretation' : 'Hide Interpretation';
+        });
+
+        itemDiv.appendChild(explBtn);
+        itemDiv.appendChild(explDiv);
+      }
       
       reviewListContainer.appendChild(itemDiv);
     });
     
-    showScreen('result');
+    if (isPracticeMode) {
+      document.getElementById('final-score').textContent = `Pending Self-Grade`;
+      document.getElementById('score-percent').textContent = `-%`;
+      
+      const saveBtn = document.createElement('button');
+      saveBtn.className = 'start-btn';
+      saveBtn.style.width = '100%';
+      saveBtn.style.marginTop = '30px';
+      saveBtn.textContent = 'Submit Self-Grading and Save Results';
+      saveBtn.addEventListener('click', async () => {
+        let finalCorrectCount = 0;
+        const finalTopicStats = {};
+
+        questions.forEach((q, i) => {
+          const isOptionCorrect = userAnswers[i] === q.answer;
+          const selfGradeRadios = document.getElementsByName(`selfgrade-${i}`);
+          let interpretationCorrect = false;
+          if (selfGradeRadios && selfGradeRadios.length > 0) {
+            interpretationCorrect = Array.from(selfGradeRadios).find(r => r.checked)?.value === 'yes';
+          } else {
+            interpretationCorrect = true; // No explanation provided for this question, option is enough
+          }
+
+          const isFullyCorrect = isOptionCorrect && interpretationCorrect;
+          if (isFullyCorrect) finalCorrectCount++;
+
+          if (!finalTopicStats[q.topic]) finalTopicStats[q.topic] = { correct: 0, total: 0 };
+          finalTopicStats[q.topic].total++;
+          if (isFullyCorrect) finalTopicStats[q.topic].correct++;
+        });
+        
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+        await saveResultToFirestore(finalCorrectCount, finalTopicStats);
+        saveBtn.style.display = 'none';
+      });
+      reviewListContainer.appendChild(saveBtn);
+      showScreen('result');
+    } else {
+      await saveResultToFirestore(correctCount, topicStats);
+      showScreen('result');
+    }
+  }
+
+  async function saveResultToFirestore(correctCount, topicStats) {
+    const score = correctCount * 2;
+    const totalScore = questions.length * 2;
+    const percentage = Math.round((correctCount / questions.length) * 100);
+    
+    let mockIdName = 'Mock';
+    if (currentMockId === 'mock-1') mockIdName = 'Chapter 1 CF';
+    else if (currentMockId === 'mock-2') mockIdName = 'Chapter 2 IAS16';
+    else if (currentMockId === 'mock-3') mockIdName = 'Chapter 3 IAS40';
+
+    const attemptData = {
+      id: `${mockIdName} (${isPracticeMode ? 'Practice' : 'Timed'}) - #${userDataCache.history.length + 1}`,
+      score: score,
+      percentage: percentage,
+      date: new Date().toLocaleDateString()
+    };
+    
+    userDataCache.history.push(attemptData);
+    
+    Object.keys(topicStats).forEach(topic => {
+      if (!userDataCache.topics[topic]) userDataCache.topics[topic] = { correct: 0, total: 0 };
+      userDataCache.topics[topic].correct += topicStats[topic].correct;
+      userDataCache.topics[topic].total += topicStats[topic].total;
+    });
+    
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        await db.collection("users").doc(user.uid).update({
+          history: firebase.firestore.FieldValue.arrayUnion(attemptData),
+          topics: userDataCache.topics
+        });
+      } catch (err) {
+        console.error("Failed to save mock exam to Firestore", err);
+      }
+    }
+    
+    document.getElementById('final-score').textContent = `${score}/${totalScore}`;
+    document.getElementById('score-percent').textContent = `${percentage}%`;
   }
 
   // --- Render Analytics Page ---
@@ -701,6 +825,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!isHighlightMode) return;
     const selection = window.getSelection();
     if (!selection.isCollapsed) {
+      // Prevent highlighting inside already highlighted text
+      if (selection.anchorNode.parentNode && selection.anchorNode.parentNode.classList && selection.anchorNode.parentNode.classList.contains('highlighted-text')) return;
+
       const range = selection.getRangeAt(0);
       const span = document.createElement('span');
       span.className = 'highlighted-text';
@@ -710,6 +837,17 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (e) {
         console.warn("Could not highlight.", e);
       }
+    }
+  });
+
+  // Remove highlight on click
+  questionTextContainer.addEventListener('click', (e) => {
+    if (isHighlightMode && e.target.classList.contains('highlighted-text')) {
+      const parent = e.target.parentNode;
+      while (e.target.firstChild) {
+        parent.insertBefore(e.target.firstChild, e.target);
+      }
+      parent.removeChild(e.target);
     }
   });
 
@@ -745,6 +883,46 @@ document.addEventListener('DOMContentLoaded', () => {
     isDragging = false;
     document.removeEventListener('mousemove', onMouseMove);
     document.removeEventListener('mouseup', onMouseUp);
+  }
+
+  // --- Scratchpad Logic ---
+  if (scratchpadTool) {
+    scratchpadTool.addEventListener('click', () => {
+      scratchpadWidget.classList.toggle('hidden');
+    });
+  }
+
+  if (closeScratchpad) {
+    closeScratchpad.addEventListener('click', () => {
+      scratchpadWidget.classList.add('hidden');
+    });
+  }
+
+  const scratchpadHeader = document.getElementById('scratchpad-header');
+  let isScratchDragging = false;
+  let scratchOffsetX, scratchOffsetY;
+
+  if (scratchpadHeader) {
+    scratchpadHeader.addEventListener('mousedown', (e) => {
+      isScratchDragging = true;
+      scratchOffsetX = e.clientX - scratchpadWidget.getBoundingClientRect().left;
+      scratchOffsetY = e.clientY - scratchpadWidget.getBoundingClientRect().top;
+      document.addEventListener('mousemove', onScratchMouseMove);
+      document.addEventListener('mouseup', onScratchMouseUp);
+    });
+  }
+
+  function onScratchMouseMove(e) {
+    if (!isScratchDragging) return;
+    scratchpadWidget.style.left = `${e.clientX - scratchOffsetX}px`;
+    scratchpadWidget.style.top = `${e.clientY - scratchOffsetY}px`;
+    scratchpadWidget.style.right = 'auto';
+  }
+
+  function onScratchMouseUp() {
+    isScratchDragging = false;
+    document.removeEventListener('mousemove', onScratchMouseMove);
+    document.removeEventListener('mouseup', onScratchMouseUp);
   }
 
   const calcDisplay = document.getElementById('calc-display');
@@ -839,23 +1017,34 @@ document.addEventListener('DOMContentLoaded', () => {
   // Calculator Keyboard Support
   document.addEventListener('keydown', (e) => {
     if (calcWidget.classList.contains('hidden')) return;
+    // Don't trigger if typing in an input or textarea
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
     
     const key = e.key;
-    if (key >= '0' && key <= '9') {
+    if (/[0-9]/.test(key)) {
       inputDigit(key);
+      updateCalcDisplay();
     } else if (key === '.') {
       inputDecimal(key);
+      updateCalcDisplay();
     } else if (key === '+' || key === '-' || key === '*' || key === '/') {
       handleOperator(key);
+      updateCalcDisplay();
     } else if (key === 'Enter' || key === '=') {
       e.preventDefault();
       handleOperator(operator);
       operator = null;
-    } else if (key === 'Escape' || key === 'Backspace' || key === 'Delete') {
+      updateCalcDisplay();
+    } else if (key === 'Escape') {
       resetCalculator();
+      updateCalcDisplay();
+    } else if (key === 'Backspace') {
+      calcValue = calcValue.length > 1 ? calcValue.slice(0, -1) : '0';
+      updateCalcDisplay();
     }
-    updateCalcDisplay();
   });
+
+
 
   // Utility
   function escapeHTML(str) {

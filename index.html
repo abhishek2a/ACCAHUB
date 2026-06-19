@@ -183,15 +183,29 @@
           <div class="hub-card">
             <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 20px;">Chapterwise Mocks</h3>
             <ul class="resource-list">
-              <li>
-                <strong>Chapter 1: Conceptual Framework</strong><br>
+              <li style="display:flex; flex-direction:column; gap:5px;">
+                <strong>Chapter 1: Conceptual Framework</strong>
                 <span style="color:var(--text-light); font-size:12px;">15 Questions • 30 Marks • 36 Minutes</span>
-                <button id="start-exam-btn" class="start-btn">Launch Exam</button>
+                <div style="display:flex; gap:10px; margin-top:5px;">
+                  <button class="start-btn" onclick="startMock('mock-1', false)" style="margin-top:0;">Launch Timed Exam</button>
+                  <button class="start-btn" onclick="startMock('mock-1', true)" style="margin-top:0; background:var(--bg-alt); color:var(--text-main); border:1px solid var(--border-color); box-shadow:none;">Practice Mode</button>
+                </div>
               </li>
-              <li>
-                <strong style="color:var(--text-light);">Chapter 2: Tangible Non-Current Assets</strong><br>
-                <span style="color:var(--text-light); font-size:12px;">Coming Soon</span>
-                <button class="start-btn" disabled style="opacity: 0.5;">Launch Exam</button>
+              <li style="display:flex; flex-direction:column; gap:5px;">
+                <strong>Chapter 2: IAS 16 PPE</strong>
+                <span style="color:var(--text-light); font-size:12px;">5 Questions • 10 Marks • 12 Minutes</span>
+                <div style="display:flex; gap:10px; margin-top:5px;">
+                  <button class="start-btn" onclick="startMock('mock-2', false)" style="margin-top:0;">Launch Timed Exam</button>
+                  <button class="start-btn" onclick="startMock('mock-2', true)" style="margin-top:0; background:var(--bg-alt); color:var(--text-main); border:1px solid var(--border-color); box-shadow:none;">Practice Mode</button>
+                </div>
+              </li>
+              <li style="display:flex; flex-direction:column; gap:5px;">
+                <strong>Chapter 3: IAS 40 Investment Property</strong>
+                <span style="color:var(--text-light); font-size:12px;">4 Questions • 8 Marks • 10 Minutes</span>
+                <div style="display:flex; gap:10px; margin-top:5px;">
+                  <button class="start-btn" onclick="startMock('mock-3', false)" style="margin-top:0;">Launch Timed Exam</button>
+                  <button class="start-btn" onclick="startMock('mock-3', true)" style="margin-top:0; background:var(--bg-alt); color:var(--text-main); border:1px solid var(--border-color); box-shadow:none;">Practice Mode</button>
+                </div>
               </li>
             </ul>
           </div>
@@ -287,7 +301,7 @@
       <div class="cbe-tools">
         <button class="cbe-tool-btn" id="calc-tool"><i data-lucide="calculator" style="width:14px;"></i> Calculator</button>
         <button class="cbe-tool-btn" id="highlight-tool"><i data-lucide="highlighter" style="width:14px;"></i> Highlight</button>
-        <button class="cbe-tool-btn"><i data-lucide="edit-3" style="width:14px;"></i> Scratch Pad</button>
+        <button class="cbe-tool-btn" id="scratchpad-tool"><i data-lucide="edit-3" style="width:14px;"></i> Scratch Pad</button>
         <button class="cbe-tool-btn"><i data-lucide="flag" style="width:14px;"></i> Flag for Review</button>
       </div>
       <div class="cbe-timer" id="timer-display">36:00</div>
@@ -301,6 +315,10 @@
         <div class="cbe-question-body">
           <div id="question-text" class="cbe-q-text"></div>
           <div id="options-container" class="cbe-options"></div>
+          <div id="practice-interpretation-container" class="hidden" style="margin-top: 30px; border-top: 1px dashed var(--border-color); padding-top: 20px;">
+            <label style="font-weight: bold; margin-bottom: 10px; display: block; color: var(--acca-red);">Practice Mode: Your Interpretation / Working</label>
+            <textarea id="interpretation-input" style="width: 100%; height: 100px; padding: 10px; background: var(--bg-main); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 4px; font-family: inherit; resize: vertical;" placeholder="Type your step-by-step logic here..."></textarea>
+          </div>
         </div>
         <div class="cbe-bottombar">
           <div>
@@ -382,6 +400,17 @@
     </div>
     <div id="navigator-grid" style="padding:15px; display:grid; grid-template-columns:repeat(5, 1fr); gap:10px;">
       <!-- Grid items dynamically generated -->
+    </div>
+  </div>
+
+  <!-- Scratchpad Widget -->
+  <div id="scratchpad-widget" class="hidden" style="position: absolute; top: 120px; left: 320px; width: 350px; background: var(--bg-alt); border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.4); z-index: 90;">
+    <div id="scratchpad-header" style="background: var(--bg-main); padding: 8px 10px; font-weight: bold; font-size: 13px; display: flex; justify-content: space-between; cursor: move; border-bottom: 1px solid var(--border-color); color: var(--text-main);">
+      <span>Scratch Pad</span>
+      <button id="close-scratchpad" style="cursor: pointer; border: none; background: none; color: var(--text-main);"><i data-lucide="x" style="width:12px;"></i></button>
+    </div>
+    <div style="padding: 10px;">
+      <textarea id="scratchpad-textarea" style="width: 100%; height: 250px; background: var(--panel-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 10px; font-family: inherit; font-size: 14px; resize: none;" placeholder="Type your notes here..."></textarea>
     </div>
   </div>
 
