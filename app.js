@@ -477,6 +477,47 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // --- Navigator Logic ---
+  const navBtn = document.getElementById('nav-btn');
+  const navigatorWidget = document.getElementById('navigator-widget');
+  const closeNavigatorBtn = document.getElementById('close-navigator');
+  const navigatorGrid = document.getElementById('navigator-grid');
+
+  if (navBtn && navigatorWidget) {
+    navBtn.addEventListener('click', () => {
+      navigatorGrid.innerHTML = '';
+      questions.forEach((q, i) => {
+        const btn = document.createElement('button');
+        btn.textContent = i + 1;
+        btn.style.padding = '10px';
+        btn.style.border = '1px solid var(--border-color)';
+        // Red if answered, alt bg if unanswered
+        btn.style.background = userAnswers[i] ? 'var(--acca-red)' : 'var(--bg-alt)';
+        btn.style.color = userAnswers[i] ? 'white' : 'var(--text-main)';
+        btn.style.cursor = 'pointer';
+        btn.style.borderRadius = '4px';
+        
+        // Highlight current question
+        if(i === currentQuestionIndex) {
+          btn.style.border = '2px solid var(--text-main)';
+          btn.style.fontWeight = 'bold';
+        }
+
+        btn.addEventListener('click', () => {
+          currentQuestionIndex = i;
+          renderQuestion();
+          navigatorWidget.classList.add('hidden');
+        });
+        navigatorGrid.appendChild(btn);
+      });
+      navigatorWidget.classList.remove('hidden');
+    });
+
+    closeNavigatorBtn.addEventListener('click', () => {
+      navigatorWidget.classList.add('hidden');
+    });
+  }
+
   submitExamBtn.addEventListener('click', () => {
     if(confirm('Are you sure you want to end the exam?')) {
       finishExam();
@@ -793,6 +834,27 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       updateCalcDisplay();
     });
+  });
+
+  // Calculator Keyboard Support
+  document.addEventListener('keydown', (e) => {
+    if (calcWidget.classList.contains('hidden')) return;
+    
+    const key = e.key;
+    if (key >= '0' && key <= '9') {
+      inputDigit(key);
+    } else if (key === '.') {
+      inputDecimal(key);
+    } else if (key === '+' || key === '-' || key === '*' || key === '/') {
+      handleOperator(key);
+    } else if (key === 'Enter' || key === '=') {
+      e.preventDefault();
+      handleOperator(operator);
+      operator = null;
+    } else if (key === 'Escape' || key === 'Backspace' || key === 'Delete') {
+      resetCalculator();
+    }
+    updateCalcDisplay();
   });
 
   // Utility

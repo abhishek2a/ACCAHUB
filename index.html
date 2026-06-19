@@ -166,11 +166,11 @@
         <div class="hub-card">
           <ul class="resource-list">
             <li><a href="https://drive.google.com/drive/folders/1N8_eRdoF1kTKNbYmgIDJrmsp2QM-KI3k?usp=drive_link" target="_blank"><i data-lucide="file-text" style="width:16px;"></i> Conceptual Framework Notes</a></li>
-            <li><a href="#" class="disabled"><i data-lucide="file-text" style="width:16px;"></i> IAS 16</a></li>
-            <li><a href="#" class="disabled"><i data-lucide="file-text" style="width:16px;"></i> IAS 23</a></li>
-            <li><a href="#" class="disabled"><i data-lucide="file-text" style="width:16px;"></i> IAS 38</a></li>
-            <li><a href="#" class="disabled"><i data-lucide="file-text" style="width:16px;"></i> IAS 40</a></li>
-            <li><a href="#" class="disabled"><i data-lucide="file-text" style="width:16px;"></i> IFRS 5</a></li>
+            <li><a href="https://drive.google.com/drive/folders/1NBUMsDODRg6D1oBAOPvhhRDfYxvMrI4G?usp=drive_link" target="_blank"><i data-lucide="file-text" style="width:16px;"></i> IAS 16</a></li>
+            <li><a href="https://drive.google.com/drive/folders/1WWU5Ruth9WzccmSWpHFlIPAKEih_Y9nH?usp=drive_link" target="_blank"><i data-lucide="file-text" style="width:16px;"></i> IAS 23</a></li>
+            <li><a href="https://drive.google.com/drive/folders/10kkfdF4LPd4nJzmDE1M-sghRDDn3ZY3v?usp=drive_link" target="_blank"><i data-lucide="file-text" style="width:16px;"></i> IAS 38</a></li>
+            <li><a href="https://drive.google.com/drive/folders/1meHeQd51pAdi_nWlhxvaUZFOr0claA-D?usp=drive_link" target="_blank"><i data-lucide="file-text" style="width:16px;"></i> IAS 40</a></li>
+            <li><a href="https://drive.google.com/drive/folders/1UOFY3YOFWj2HvxtKtnTUCML-K7H587G0?usp=drive_link" target="_blank"><i data-lucide="file-text" style="width:16px;"></i> IFRS 5</a></li>
           </ul>
         </div>
       </div>
@@ -305,7 +305,7 @@
         <div class="cbe-bottombar">
           <div>
             <button id="prev-btn" class="cbe-nav-btn">Previous</button>
-            <button class="cbe-nav-btn" style="margin-left: 10px;"><i data-lucide="menu" style="width:14px;"></i> Navigator</button>
+            <button id="nav-btn" class="cbe-nav-btn" style="margin-left: 10px;"><i data-lucide="menu" style="width:14px;"></i> Navigator</button>
           </div>
           <div>
             <button id="next-btn" class="cbe-nav-btn">Next</button>
@@ -373,6 +373,18 @@
       <button class="calc-btn" data-val="=">=</button>
     </div>
   </div>
+
+  <!-- Navigator Widget -->
+  <div id="navigator-widget" class="hidden" style="position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:var(--panel-bg); border:1px solid var(--border-color); box-shadow:var(--shadow-card-hover); z-index:100; border-radius:8px; width: 400px; max-width: 90vw; color: var(--text-main);">
+    <div style="padding:15px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="margin:0; font-size:16px;">Exam Navigator</h3>
+      <button id="close-navigator" style="background:none; border:none; color:inherit; cursor:pointer;"><i data-lucide="x" style="width:16px;"></i></button>
+    </div>
+    <div id="navigator-grid" style="padding:15px; display:grid; grid-template-columns:repeat(5, 1fr); gap:10px;">
+      <!-- Grid items dynamically generated -->
+    </div>
+  </div>
+
   <!-- Firebase v8 (Compatible with file:/// and no local server required) -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
