@@ -1,0 +1,473 @@
+@import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600&display=swap');
+
+:root {
+  --acca-red: #cc0000;
+  --acca-dark: #111111;
+  --text-main: #1f2937;
+  --text-light: #6b7280;
+  --border-color: #e5e7eb;
+  --bg-main: #ffffff;
+  --bg-alt: #ffffff;
+  --panel-bg: #ffffff;
+  --cbe-header: #000000;
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  
+  --font-main: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+}
+
+[data-theme="dark"] {
+  --acca-dark: #ffffff;
+  --text-main: #f9fafb;
+  --text-light: #9ca3af;
+  --border-color: #222222;
+  --bg-main: #000000;
+  --bg-alt: #0a0a0a;
+  --panel-bg: #0a0a0a;
+  --cbe-header: #000000;
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Utilities */
+.hidden { display: none !important; }
+.text-red { color: var(--acca-red); }
+
+/* --- ACCA Login Screen Replica --- */
+#login-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-header {
+  padding: 20px 40px;
+}
+
+.acca-logo-box {
+  background-color: var(--acca-red);
+  color: white;
+  display: inline-block;
+  padding: 8px 10px;
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 60px;
+  width: 100%;
+  padding: 0 20px 60px 20px;
+}
+
+.login-container h1 {
+  font-weight: 300;
+  font-size: 34px;
+  margin-bottom: 30px;
+  color: var(--text-main);
+  text-align: center;
+}
+
+.login-box {
+  width: 100%;
+  max-width: 480px;
+  border: 1px solid var(--border-color);
+  padding: 40px;
+  background: var(--panel-bg);
+  box-shadow: var(--shadow-card);
+  border-radius: 8px;
+}
+
+.login-info {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-bottom: 35px;
+  line-height: 1.6;
+}
+
+.input-group {
+  margin-bottom: 25px;
+  position: relative;
+}
+
+.input-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-main);
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border-color);
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s ease;
+  border-radius: 4px;
+  background-color: transparent;
+  color: var(--text-main);
+}
+
+.input-group input:focus {
+  border-color: var(--acca-red);
+  box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1);
+}
+
+.eye-icon {
+  position: absolute;
+  right: 14px;
+  top: 40px;
+  color: #888;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+.form-link {
+  display: inline-block;
+  font-size: 13px;
+  color: #777;
+  text-decoration: none;
+  border-bottom: 1px dotted #aaa;
+  margin-top: -10px;
+  margin-bottom: 15px;
+  transition: color 0.2s;
+}
+.form-link:hover { color: var(--text-main); border-bottom-color: var(--text-main); }
+
+.sign-in-btn {
+  width: 100%;
+  padding: 14px;
+  background-color: var(--border-color); /* Disabled state */
+  color: var(--text-light);
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: not-allowed;
+  margin-top: 15px;
+  transition: all 0.3s ease;
+  border-radius: 4px;
+}
+
+.sign-in-btn.active {
+  background-color: var(--acca-red);
+  color: white;
+  cursor: pointer;
+}
+.sign-in-btn.active:hover { background-color: #a80000; }
+
+/* --- ACCA Study Hub Layout (Sidebar + Content) --- */
+#dashboard-screen, #analytics-screen {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-main);
+}
+
+.sidebar {
+  width: 260px;
+  background-color: var(--panel-bg);
+  border-right: 1px solid var(--border-color);
+  padding: 30px 0;
+  flex-shrink: 0;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.02);
+}
+
+.sidebar-header {
+  padding: 0 30px 30px 30px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 20px;
+}
+
+.sidebar-nav {
+  list-style: none;
+}
+
+.sidebar-nav li a {
+  display: block;
+  padding: 14px 30px;
+  color: var(--text-main);
+  text-decoration: none;
+  font-size: 15px;
+  border-left: 4px solid transparent;
+  transition: background-color 0.2s;
+}
+
+.sidebar-nav li a:hover, .sidebar-nav li a.active {
+  background-color: #ececec;
+  border-left-color: var(--acca-red);
+  font-weight: 600;
+  color: var(--acca-red);
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 50px 60px;
+  max-width: 1100px;
+}
+
+.main-content h2 {
+  font-weight: 300;
+  font-size: 32px;
+  margin-bottom: 40px;
+  color: var(--acca-dark);
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+}
+
+/* Hub Grid */
+.hub-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.hub-card {
+  border: 1px solid var(--border-color);
+  background: var(--panel-bg);
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: var(--shadow-card);
+}
+
+.hub-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  color: var(--text-main);
+}
+
+.resource-list { list-style: none; }
+.resource-list li { 
+  margin-bottom: 15px; 
+  padding-bottom: 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.resource-list li:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.resource-list a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-main);
+  text-decoration: none;
+  font-size: 15px;
+  transition: color 0.2s;
+}
+.resource-list a:hover { color: var(--acca-red); }
+.resource-list a.disabled { color: #aaa; cursor: not-allowed; }
+
+.start-btn {
+  background: var(--acca-red);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-top: 15px;
+  border-radius: 2px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.start-btn:hover { background: #a80000; }
+
+/* --- ACCA CBE Exam Interface --- */
+#exam-screen {
+  min-height: 100vh;
+  background-color: #eaebed; /* Soft grey for testing background */
+  display: flex;
+  flex-direction: column;
+}
+
+.cbe-topbar {
+  background-color: var(--cbe-header);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  height: 55px;
+}
+
+.cbe-brand {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.cbe-logo {
+  background-color: var(--acca-red);
+  padding: 6px 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-size: 18px;
+}
+
+.cbe-tools {
+  display: flex;
+  gap: 1px;
+}
+
+.cbe-tool-btn {
+  background: #222;
+  border: none;
+  border-right: 1px solid #333;
+  color: #ddd;
+  padding: 0 15px;
+  height: 55px;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cbe-tool-btn:hover { background: #333; color: white; }
+
+.cbe-timer {
+  font-size: 20px;
+  font-weight: 600;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.cbe-content-area {
+  flex-grow: 1;
+  padding: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.cbe-question-box {
+  background: var(--panel-bg);
+  border: 1px solid #ccc;
+  width: 100%;
+  max-width: 950px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.cbe-question-header {
+  background: var(--bg-alt);
+  padding: 15px 30px;
+  font-weight: 600;
+  font-size: 16px;
+  border-bottom: 1px solid #ccc;
+  color: var(--text-main);
+}
+
+.cbe-question-body {
+  padding: 40px;
+  flex-grow: 1;
+  font-family: Arial, Helvetica, sans-serif; /* Authentic exam font */
+  font-size: 16px;
+  color: #000;
+}
+
+.cbe-q-text {
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+.cbe-options {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cbe-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  cursor: pointer;
+}
+
+.cbe-option input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  margin-top: 2px;
+}
+
+.cbe-bottombar {
+  background: var(--bg-alt);
+  border-top: 1px solid #ccc;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.cbe-nav-btn {
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 10px 25px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 2px;
+}
+.cbe-nav-btn:hover { background: var(--bg-main); }
+.cbe-nav-btn.primary { background: var(--text-main); color: var(--bg-main); border-color: var(--text-main); }
+.cbe-nav-btn.primary:hover { opacity: 0.9; }
+
+/* Calculator Widget */
+#calculator-widget {
+  position: absolute;
+  top: 80px;
+  left: 30px;
+  width: 260px;
+  background: #f0f0f0;
+  border: 1px solid #666;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  z-index: 100;
+}
+.calc-header { background: #e0e0e0; padding: 8px 10px; font-weight: bold; font-size: 13px; display: flex; justify-content: space-between; cursor: move; border-bottom: 1px solid #aaa;}
+.calc-close { cursor: pointer; border: none; background: none; }
+.calc-display { background: var(--panel-bg); padding: 15px; text-align: right; font-family: 'Courier New', monospace; font-size: 24px; border: 1px solid var(--border-color); margin: 10px; }
+.calc-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 0 10px 10px 10px; }
+.calc-btn { padding: 12px; border: 1px solid var(--border-color); background: var(--panel-bg); color: var(--text-main); cursor: pointer; font-size: 16px; font-weight: 600;}
+.calc-btn:hover { background: #e6e6e6; }
+
+/* Highlighter utility */
+.highlighted-text { background-color: #ffff00; color: #000; }
+
+/* --- Results / Analytics specific styles --- */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 40px; }
+.stat-card { border: 1px solid var(--border-color); padding: 30px; text-align: center; background: var(--panel-bg); box-shadow: var(--shadow-card); border-radius: 8px;}
+.stat-label { display: block; font-size: 13px; color: var(--text-light); text-transform: uppercase; margin-bottom: 12px; font-weight: 600;}
+.stat-value { font-size: 32px; font-weight: bold; color: var(--acca-red); }
+
+.review-item { border: 1px solid var(--border-color); padding: 30px; margin-bottom: 25px; background: var(--panel-bg); box-shadow: var(--shadow-card); border-radius: 8px;}
+.review-header { display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+.review-correct { color: #008a00; }
+.review-incorrect { color: #cc0000; }
+.review-q-text { font-family: Arial, sans-serif; font-size: 16px; margin-bottom: 20px; line-height: 1.6;}
+.review-opt { padding: 12px 15px; border: 1px solid #eee; margin-bottom: 8px; border-radius: 2px;}
+.review-opt.is-correct { background: #eaffea; border-color: #008a00; color: #006600;}
+.review-opt.is-user-wrong { background: #ffeaea; border-color: #cc0000; color: #aa0000;}

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACCA FR Portal</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen">
+    <div class="login-header">
+      <!-- Logo removed -->
+    </div>
+    
+    <div class="login-container">
+      <h1>Sign in to ACCA FR Portal</h1>
+      
+      <div class="login-box">
+        <form id="login-form">
+          <div class="input-group">
+            <label for="username">Email Address<span class="text-red">*</span></label>
+            <input type="email" id="username" required>
+          </div>
+          <div class="input-group">
+            <label for="password">Password<span class="text-red">*</span></label>
+            <input type="password" id="password" required>
+            <i data-lucide="eye" class="eye-icon" id="toggle-password"></i>
+          </div>
+          
+          <a href="#" id="link-forgot-password" class="form-link">Forgotten your password?</a><br>
+          
+          <button type="submit" id="login-btn" class="sign-in-btn" disabled>Sign in</button>
+          
+          <div style="margin-top: 20px; text-align: center; border-top: 1px solid var(--border-color); padding-top: 20px;">
+            <p style="font-size: 14px; margin-bottom: 10px;">Don't have an account?</p>
+            <button type="button" id="link-create-account" class="cbe-nav-btn" style="width: 100%;">Create an account</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- REGISTER SCREEN -->
+  <div id="register-screen" class="hidden">
+    <div class="login-header"></div>
+    <div class="login-container">
+      <h1>Create an ACCA Account</h1>
+      <div class="login-box">
+        <p class="login-info">Enter your details to register for the ACCA FR Portal.</p>
+        <form id="register-form">
+          <div class="input-group">
+            <label for="reg-email">Email Address<span class="text-red">*</span></label>
+            <input type="email" id="reg-email" required>
+          </div>
+          <div class="input-group">
+            <label for="reg-password">Password<span class="text-red">*</span></label>
+            <input type="password" id="reg-password" required>
+          </div>
+          <div class="input-group">
+            <label for="reg-confirm">Confirm Password<span class="text-red">*</span></label>
+            <input type="password" id="reg-confirm" required>
+          </div>
+          <button type="submit" id="register-btn" class="sign-in-btn" disabled>Register</button>
+          <div style="margin-top: 20px; text-align: center;">
+            <a href="#" id="link-back-login-1" class="form-link">Back to Sign in</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORGOT PASSWORD SCREEN -->
+  <div id="forgot-screen" class="hidden">
+    <div class="login-header"></div>
+    <div class="login-container">
+      <h1>Reset Password</h1>
+      <div class="login-box">
+        <p class="login-info">Enter your registered email address and we'll send you a link to reset your password.</p>
+        <form id="forgot-form">
+          <div class="input-group">
+            <label for="forgot-email">Email Address<span class="text-red">*</span></label>
+            <input type="email" id="forgot-email" required>
+          </div>
+          <button type="submit" id="forgot-btn" class="sign-in-btn" disabled>Send Reset Link</button>
+          <div style="margin-top: 20px; text-align: center;">
+            <a href="#" id="link-back-login-2" class="form-link">Back to Sign in</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- STUDY HUB / DASHBOARD SCREEN -->
+  <div id="dashboard-screen" class="hidden">
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h3 style="padding: 10px 0;">FR Portal</h3>
+      </div>
+      <ul class="sidebar-nav">
+        <li><a href="#" class="nav-tab active" data-target="tab-dashboard">Dashboard</a></li>
+        <li><a href="#" class="nav-tab" data-target="tab-mocks">Mock Exams</a></li>
+        <li><a href="#" class="nav-tab" data-target="tab-qbank">Question Banks</a></li>
+        <li><a href="#" class="nav-tab" data-target="tab-materials">Study Materials</a></li>
+        <li><a href="#" class="nav-tab" data-target="tab-profile">My Profile</a></li>
+      </ul>
+    </div>
+    
+    <div class="main-content">
+      
+      <!-- Dashboard Tab -->
+      <div id="tab-dashboard" class="hub-tab">
+        <h2 style="margin-bottom: 10px;">Welcome back, <span id="user-display-name">ACCA Student</span>!</h2>
+        <p style="color: var(--text-light); margin-bottom: 30px;">Ready to continue your Financial Reporting (FR) preparation?</p>
+        
+        <div class="hub-grid">
+          <div class="hub-card" style="border-top: 4px solid var(--acca-red);">
+            <h3>Your Next Step</h3>
+            <p style="margin-bottom: 20px;">You haven't completed any mock exams yet. Start with the Conceptual Framework chapterwise mock.</p>
+            <button class="start-btn" onclick="document.querySelector('[data-target=\'tab-mocks\']').click()">Go to Mock Exams</button>
+          </div>
+          <div class="hub-card">
+            <h3>Quick Stats</h3>
+            <div style="display: flex; gap: 20px; margin-top: 15px;">
+              <div>
+                <span style="font-size: 24px; font-weight: bold;" id="dash-mocks-completed">0</span><br>
+                <span style="font-size: 12px; color: var(--text-light);">Mocks Completed</span>
+              </div>
+              <div>
+                <span style="font-size: 24px; font-weight: bold;" id="dash-avg-score">0%</span><br>
+                <span style="font-size: 12px; color: var(--text-light);">Average Score</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="hub-card" style="border-top: 4px solid #10b981;">
+            <h3>Exam Countdown</h3>
+            <div style="margin-top: 10px;">
+              <span style="font-size: 14px; color: var(--text-light);">ACCA FR Exam</span><br>
+              <span style="font-size: 16px; font-weight: bold;">September 10, 2026</span><br>
+              <div style="margin-top: 10px; display: flex; align-items: baseline; gap: 8px;">
+                <span id="countdown-days" style="font-size: 32px; font-weight: 800; color: #10b981;">--</span>
+                <span style="font-size: 14px; color: var(--text-light);">Days Remaining</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Question Banks Tab -->
+      <div id="tab-qbank" class="hub-tab hidden">
+        <h2>Question Banks</h2>
+        <div class="hub-card">
+          <ul class="resource-list">
+            <li><a href="https://drive.google.com/file/d/1aKP08wdJQT0vQMCSDk4eRq7Rf9FAHLnC/view?usp=drive_link" target="_blank"><i data-lucide="book-open" style="width:16px;"></i> Kaplan Question Bank</a></li>
+            <li><a href="https://drive.google.com/file/d/1yguhn00XCrSdiDlYxGPKAie0EECaq01l/view?usp=drive_link" target="_blank"><i data-lucide="book-open" style="width:16px;"></i> BPP Question Bank</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Study Materials Tab -->
+      <div id="tab-materials" class="hub-tab hidden">
+        <h2>Study Materials</h2>
+        <div class="hub-card">
+          <ul class="resource-list">
+            <li><a href="https://drive.google.com/drive/folders/1N8_eRdoF1kTKNbYmgIDJrmsp2QM-KI3k?usp=drive_link" target="_blank"><i data-lucide="file-text" style="width:16px;"></i> Conceptual Framework Notes</a></li>
+            <li><a href="#" class="disabled"><i data-lucide="file-text" style="width:16px;"></i> IAS 16</a></li>
+            <li><a href="#" class="disabled"><i data-lucide="file-text" style="width:16px;"></i> IAS 23</a></li>
+            <li><a href="#" class="disabled"><i data-lucide="file-text" style="width:16px;"></i> IAS 38</a></li>
+            <li><a href="#" class="disabled"><i data-lucide="file-text" style="width:16px;"></i> IAS 40</a></li>
+            <li><a href="#" class="disabled"><i data-lucide="file-text" style="width:16px;"></i> IFRS 5</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Mock Exams Tab -->
+      <div id="tab-mocks" class="hub-tab hidden">
+        <h2>Mock Exams</h2>
+        
+        <div class="hub-grid">
+          <div class="hub-card">
+            <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 20px;">Chapterwise Mocks</h3>
+            <ul class="resource-list">
+              <li>
+                <strong>Chapter 1: Conceptual Framework</strong><br>
+                <span style="color:var(--text-light); font-size:12px;">15 Questions • 30 Marks • 36 Minutes</span>
+                <button id="start-exam-btn" class="start-btn">Launch Exam</button>
+              </li>
+              <li>
+                <strong style="color:var(--text-light);">Chapter 2: Tangible Non-Current Assets</strong><br>
+                <span style="color:var(--text-light); font-size:12px;">Coming Soon</span>
+                <button class="start-btn" disabled style="opacity: 0.5;">Launch Exam</button>
+              </li>
+            </ul>
+          </div>
+          
+          <div class="hub-card">
+            <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 20px;">Full Exam Mocks</h3>
+            <ul class="resource-list">
+              <li>
+                <strong style="color:var(--text-light);">FR Full Mock Exam 1</strong><br>
+                <span style="color:var(--text-light); font-size:12px;">Section A, B, C • 100 Marks • 3 Hours</span>
+                <button class="start-btn" disabled style="opacity: 0.5;">Locked</button>
+              </li>
+              <li>
+                <strong style="color:var(--text-light);">FR Full Mock Exam 2</strong><br>
+                <span style="color:var(--text-light); font-size:12px;">Section A, B, C • 100 Marks • 3 Hours</span>
+                <button class="start-btn" disabled style="opacity: 0.5;">Locked</button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Profile Tab -->
+      <div id="tab-profile" class="hub-tab hidden">
+        <h2>My Profile & Settings</h2>
+        
+        <div class="hub-card" style="margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 20px;">
+            <div style="width: 60px; height: 60px; background: var(--acca-red); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold;">
+              AS
+            </div>
+            <div>
+              <h3 style="margin: 0; padding: 0; border: none; font-size: 20px;" id="profile-name-display">ACCA Student</h3>
+              <div id="profile-name-edit" class="hidden" style="display: flex; gap: 10px; margin-top: 10px;">
+                <input type="text" id="profile-name-input" class="cbe-input" style="padding: 5px; border: 1px solid var(--border-color); border-radius: 3px;" value="ACCA Student">
+                <button id="save-name-btn" class="start-btn" style="padding: 5px 15px;">Save</button>
+              </div>
+            </div>
+          </div>
+          <button id="edit-name-btn" class="cbe-nav-btn"><i data-lucide="edit-2" style="width:14px;"></i> Edit Name</button>
+        </div>
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-label">Average Score</span>
+            <span class="stat-value" id="stat-average">0%</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Best Score</span>
+            <span class="stat-value" id="stat-best">0%</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Latest Score</span>
+            <span class="stat-value" id="stat-latest">0%</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Attempts</span>
+            <span class="stat-value" id="stat-attempts">0</span>
+          </div>
+        </div>
+
+        <div class="hub-grid">
+          <div class="hub-card">
+            <h3>Mock History</h3>
+            <div id="history-list">
+              <p style="color:#666;">No mock exams completed yet.</p>
+            </div>
+          </div>
+          <div class="hub-card">
+            <h3>Topic Performance</h3>
+            <div id="topic-list">
+              <p style="color:#666;">Not enough data.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid var(--border-color); display: flex; gap: 15px;">
+          <button id="theme-toggle" class="cbe-nav-btn">Dark Mode: Off</button>
+          <button id="nav-logout" class="cbe-nav-btn" style="color: var(--acca-red); border-color: var(--acca-red);">Sign Out</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CBE EXAM SCREEN -->
+  <div id="exam-screen" class="hidden">
+    <div class="cbe-topbar">
+      <div class="cbe-brand">
+        <!-- Logo removed -->
+        <div style="font-size: 14px;">Financial Reporting (FR)</div>
+      </div>
+      <div class="cbe-tools">
+        <button class="cbe-tool-btn" id="calc-tool"><i data-lucide="calculator" style="width:14px;"></i> Calculator</button>
+        <button class="cbe-tool-btn" id="highlight-tool"><i data-lucide="highlighter" style="width:14px;"></i> Highlight</button>
+        <button class="cbe-tool-btn"><i data-lucide="edit-3" style="width:14px;"></i> Scratch Pad</button>
+        <button class="cbe-tool-btn"><i data-lucide="flag" style="width:14px;"></i> Flag for Review</button>
+      </div>
+      <div class="cbe-timer" id="timer-display">36:00</div>
+    </div>
+
+    <div class="cbe-content-area">
+      <div class="cbe-question-box">
+        <div class="cbe-question-header">
+          Question <span id="current-q-num">1</span> of 15
+        </div>
+        <div class="cbe-question-body">
+          <div id="question-text" class="cbe-q-text"></div>
+          <div id="options-container" class="cbe-options"></div>
+        </div>
+        <div class="cbe-bottombar">
+          <div>
+            <button id="prev-btn" class="cbe-nav-btn">Previous</button>
+            <button class="cbe-nav-btn" style="margin-left: 10px;"><i data-lucide="menu" style="width:14px;"></i> Navigator</button>
+          </div>
+          <div>
+            <button id="next-btn" class="cbe-nav-btn">Next</button>
+            <button id="submit-exam-btn" class="cbe-nav-btn primary hidden">Submit Exam</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CBE RESULT SCREEN -->
+  <div id="result-screen" class="hidden">
+    <div class="cbe-topbar">
+      <div class="cbe-brand">
+        <!-- Logo removed -->
+        <div style="font-size: 14px;">Exam Results</div>
+      </div>
+      <div class="cbe-tools">
+        <button class="cbe-tool-btn" id="exit-result-btn">Exit to Hub</button>
+      </div>
+    </div>
+
+    <div class="cbe-content-area" style="flex-direction: column; align-items: center;">
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h2>Score: <span id="final-score" class="text-red">0/30</span> (<span id="score-percent">0%</span>)</h2>
+      </div>
+
+      <div class="cbe-question-box" style="padding: 30px;">
+        <h3 style="margin-bottom: 20px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">Detailed Answer Review</h3>
+        <div id="review-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calculator Widget -->
+  <div id="calculator-widget" class="hidden">
+    <div class="calc-header" id="calc-header">
+      <span>Standard Calculator</span>
+      <button class="calc-close" id="close-calc"><i data-lucide="x" style="width:12px;"></i></button>
+    </div>
+    <div class="calc-display" id="calc-display">0</div>
+    <div class="calc-buttons">
+      <button class="calc-btn" data-val="C">C</button>
+      <button class="calc-btn" data-val="CE">CE</button>
+      <button class="calc-btn" data-val="%">%</button>
+      <button class="calc-btn" data-val="/">/</button>
+      
+      <button class="calc-btn" data-val="7">7</button>
+      <button class="calc-btn" data-val="8">8</button>
+      <button class="calc-btn" data-val="9">9</button>
+      <button class="calc-btn" data-val="*">×</button>
+      
+      <button class="calc-btn" data-val="4">4</button>
+      <button class="calc-btn" data-val="5">5</button>
+      <button class="calc-btn" data-val="6">6</button>
+      <button class="calc-btn" data-val="-">-</button>
+      
+      <button class="calc-btn" data-val="1">1</button>
+      <button class="calc-btn" data-val="2">2</button>
+      <button class="calc-btn" data-val="3">3</button>
+      <button class="calc-btn" data-val="+">+</button>
+      
+      <button class="calc-btn" data-val="0" style="grid-column: span 2;">0</button>
+      <button class="calc-btn" data-val=".">.</button>
+      <button class="calc-btn" data-val="=">=</button>
+    </div>
+  </div>
+  <!-- Firebase v8 (Compatible with file:/// and no local server required) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <script src="questions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
