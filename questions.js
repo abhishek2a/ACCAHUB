@@ -220,8 +220,10 @@ Gain recognised in Profit or Loss = $1,000,000.`
     },
     {
       id: 3,
+      section: "B",
+      scenario: "Speculate owns two properties and uses fair value accounting where possible.\nProperty A: An office building used by Speculate for administrative purposes. At 1 April 20X2 it had a carrying amount of $2 million and a remaining life of 20 years. On 1 October 20X2, the property was let to a third party and reclassified as an investment property. The property had a fair value of $2.3 million at 1 October 20X2, and $2.34 million at 31 March 20X3.\nProperty B: Another office building let on a 12-month lease to a subsidiary of Speculate. At 1 April 20X2, it had a fair value of $1.5 million which had risen to $1.65 million at 31 March 20X3.",
       topic: "IAS 40 Investment Property",
-      text: "SECTION B SCENARIO:\nSpeculate owns two properties and uses fair value accounting where possible.\nProperty A: An office building used by Speculate for administrative purposes. At 1 April 20X2 it had a carrying amount of $2 million and a remaining life of 20 years. On 1 October 20X2, the property was let to a third party and reclassified as an investment property. The property had a fair value of $2.3 million at 1 October 20X2, and $2.34 million at 31 March 20X3.\nProperty B: Another office building let on a 12-month lease to a subsidiary of Speculate. At 1 April 20X2, it had a fair value of $1.5 million which had risen to $1.65 million at 31 March 20X3.\n\n(A) What is the correct treatment when Property A is reclassified as an investment property?",
+      text: "(A) What is the correct treatment when Property A is reclassified as an investment property?",
       options: ["A. Take $350,000 gain to other comprehensive income", "B. Take $350,000 gain to the statement of profit or loss", "C. Take $400,000 gain to other comprehensive income", "D. Take $400,000 gain to the statement of profit or loss"],
       answer: "A",
       marks: 2,
@@ -231,8 +233,10 @@ Treatment: Accounted for as a revaluation under IAS 16, so the $350,000 gain goe
     },
     {
       id: 4,
+      section: "B",
+      scenario: "Speculate owns two properties and uses fair value accounting where possible.\nProperty A: An office building used by Speculate for administrative purposes. At 1 April 20X2 it had a carrying amount of $2 million and a remaining life of 20 years. On 1 October 20X2, the property was let to a third party and reclassified as an investment property. The property had a fair value of $2.3 million at 1 October 20X2, and $2.34 million at 31 March 20X3.\nProperty B: Another office building let on a 12-month lease to a subsidiary of Speculate. At 1 April 20X2, it had a fair value of $1.5 million which had risen to $1.65 million at 31 March 20X3.",
       topic: "IAS 40 Investment Property",
-      text: "SECTION B SCENARIO:\nSpeculate owns two properties and uses fair value accounting where possible.\nProperty A: An office building used by Speculate for administrative purposes. At 1 April 20X2 it had a carrying amount of $2 million and a remaining life of 20 years. On 1 October 20X2, the property was let to a third party and reclassified as an investment property. The property had a fair value of $2.3 million at 1 October 20X2, and $2.34 million at 31 March 20X3.\nProperty B: Another office building let on a 12-month lease to a subsidiary of Speculate. At 1 April 20X2, it had a fair value of $1.5 million which had risen to $1.65 million at 31 March 20X3.\n\n(B) Which of the following models can Speculate use to account for investment properties in its individual financial statements?\n\n(i) Cost model\n(ii) Revaluation model\n(iii) Fair value model",
+      text: "(B) Which of the following models can Speculate use to account for investment properties in its individual financial statements?\n\n(i) Cost model\n(ii) Revaluation model\n(iii) Fair value model",
       options: ["A. (i) and (ii) only", "B. (i) and (iii) only", "C. (ii) and (iii) only", "D. All three"],
       answer: "B",
       marks: 2,
@@ -241,6 +245,126 @@ Treatment: Accounted for as a revaluation under IAS 16, so the $350,000 gain goe
 (iii) Fair Value Model: Measure at fair value each year with gains/losses to P&L, no depreciation (Allowed).
 (ii) Revaluation Model is NOT allowed under IAS 40 (it belongs to IAS 16 PPE).
 Therefore, only (i) and (iii) are permitted.`
+    },
+    {
+      id: 5,
+      topic: "IAS 40 Investment Property",
+      text: "Which of the following is investment property according to IAS 40 Investment Property?",
+      options: ["A. An investment in land and or buildings other than leased property", "B. A property owned and occupied by an entity for its own purposes", "C. A property which is held to earn rentals or for capital appreciation", "D. An investment in land and or buildings whether let to third parties or occupied by an entity within a group"],
+      answer: "C",
+      marks: 2,
+      explanation: `The core definition of an investment property under IAS 40 is a property (land or a building, or part of a building, or both) held to earn rentals or for capital appreciation, or both.\n\nExam Tip: "Own purposes" (Option B) always points to IAS 16 Property, Plant and Equipment (PPE).`
+    },
+    {
+      id: 6,
+      topic: "IAS 40 Investment Property",
+      text: "In accordance with IAS 40 Investment Property, which TWO of the following are classified as investment property?\n(1) Property held for long-term capital appreciation\n(2) Owner-occupied property\n(3) Land held for an undetermined future use\n(4) Property occupied by employees",
+      options: ["A. (1) and (3)", "B. (2) and (4)", "C. (1) and (2)", "D. (3) and (4)"],
+      answer: "A",
+      marks: 2,
+      explanation: `Land held for undetermined future use is explicitly classified as investment property because it is assumed to be held for capital appreciation until management decides otherwise. Owner-occupied and employee-occupied properties fall under IAS 16.`
+    },
+    {
+      id: 7,
+      topic: "IAS 40 Investment Property",
+      text: "Which of the following is an investment property under IAS 40 Investment Property?",
+      options: ["A. A building that is vacant but held to be rented to third parties", "B. Property under construction on behalf of third parties", "C. Property that is available for sale in the ordinary course of business", "D. Owner-occupied property"],
+      answer: "A",
+      marks: 2,
+      explanation: `A vacant building held for a future operating lease qualifies as an investment property.\n\nRevision Point: Option B falls under IFRS 15 (Revenue), Option C is IAS 2 (Inventories), and Option D is IAS 16 (PPE).`
+    },
+    {
+      id: 8,
+      topic: "IAS 40 Investment Property",
+      text: "Under IAS 40 Investment Property, which of the following transfers could result in a change from a cost model to a fair value model?\n(1) A transfer from investment property to owner-occupied property\n(2) A transfer from inventories to property available for rental\n(3) A transfer from investment property to inventories, when the property is intended for sale",
+      options: ["A. 1 only", "B. 2 only", "C. 3 only", "D. 1 and 2 only"],
+      answer: "B",
+      marks: 2,
+      explanation: `Inventories are held at the lower of cost and Net Realisable Value (NRV). If transferred to an investment property and the entity uses the fair value model for its investment properties, this results in a change from a cost basis to a fair value basis. The difference is recognized immediately in profit or loss.`
+    },
+    {
+      id: 9,
+      topic: "IAS 40 Investment Property",
+      text: "Identify the correct purposes of holding investment properties in accordance with IAS 40.\n(1) For administrative purposes\n(2) For use in the supply of services\n(3) For use in the production of goods\n(4) To earn rental income\n(5) For capital appreciation",
+      options: ["A. 1 and 2", "B. 2 and 3", "C. 4 and 5", "D. 1, 4 and 5"],
+      answer: "C",
+      marks: 2,
+      explanation: `To earn rental income -> CORRECT\nFor capital appreciation -> CORRECT\n\nExplanation: Any property used for administration, supply of services, or production of goods is owner-occupied and governed by IAS 16.`
+    },
+    {
+      id: 10,
+      topic: "IAS 40 Investment Property",
+      text: "Wingtip, a building company, owns a property which is currently occupied by its subsidiary. How should this property be accounted for in the CONSOLIDATED financial statements?",
+      options: ["A. As investment property under IAS 40 Investment Property", "B. As inventory under IAS 2 Inventories", "C. As a lease under IFRS 16 Leases", "D. As property under IAS 16 Property, Plant and Equipment"],
+      answer: "D",
+      marks: 2,
+      explanation: `Crucial Consolidation Rule: While the property might be an investment property in the individual financial statements of the parent, from the perspective of the group (the consolidated entity), the property is owner-occupied. Therefore, it must be treated as PPE under IAS 16 in the consolidated statements.`
+    },
+    {
+      id: 11,
+      topic: "IAS 40 Investment Property",
+      text: "Which of the following could require a property to be accounted for under IAS 40 Investment Property?",
+      options: ["A. The commencement of owner occupation", "B. The commencement of development with a view to sale", "C. The cessation of a lease to another party", "D. The cessation of owner occupation"],
+      answer: "D",
+      marks: 2,
+      explanation: `When owner-occupation ceases and the property is now held to earn rentals or for capital appreciation, it must be transferred out of IAS 16 and into IAS 40.`
+    },
+    {
+      id: 12,
+      topic: "IAS 40 Investment Property",
+      text: "A company ceased owner-occupation of an office building on 31 March 20X3 and let the building out to a third party. The fair value was estimated to be $0.9m. The building had originally cost $0.8m on 1 January 20X1 and has a 50-year life. At 31 December 20X3, the building had an estimated fair value of $1.1m.\n\nWhat amount should be credited to profit or loss in respect of the building at 31 December 20X3?",
+      options: ["A. $136,000", "B. $200,000", "C. $300,000", "D. $336,000"],
+      answer: "B",
+      marks: 2,
+      explanation: `Step-by-Step Calculation:\nCalculate Carrying Amount at Transfer (31 March 20X3):\n- Depreciation per year = $800,000 / 50 years = $16,000.\n- Time held as PPE (1 Jan 20X1 to 31 March 20X3) = 2.25 years (27 months).\n- Total Accumulated Depreciation = 2.25 × $16,000 = $36,000.\n- Carrying Amount = $800,000 - $36,000 = $764,000.\n\nAccount for the Transfer (IAS 16 to IAS 40):\n- Fair Value at 31 March = $900,000.\n- Revaluation Gain = $900,000 - $764,000 = $136,000.\nImportant: Under standard transfer rules, this initial uplift is treated as an IAS 16 revaluation and goes to Other Comprehensive Income (OCI) / Revaluation Surplus, not P&L.\n\nCalculate Year-End Fair Value Movement (IAS 40):\nFair Value at 31 Dec = $1,100,000.\nGain since transfer = $1,100,000 - $900,000 = $200,000.\nUnder the IAS 40 Fair Value model, subsequent changes in fair value go directly to Profit or Loss (P&L).`
+    },
+    {
+      id: 13,
+      topic: "IAS 40 Investment Property",
+      text: "An investment property under IAS 40 can be held for which of the following purposes?",
+      options: ["A. For use as an office", "B. For use as retail premises", "C. For use in the supply of services", "D. For capital appreciation"],
+      answer: "D",
+      marks: 2,
+      explanation: `Capital appreciation is a primary criterion for IAS 40. The other options involve active use by the entity, placing them under IAS 16.`
+    },
+    {
+      id: 14,
+      topic: "IAS 40 Investment Property",
+      text: "If the fair value of an investment property cannot be reliably measured, how should it be recognised?",
+      options: ["A. At an estimated amount under IAS 40", "B. At value in use", "C. At cost less depreciation under IAS 16", "D. At estimated replacement cost"],
+      answer: "C",
+      marks: 2,
+      explanation: `In exceptional cases where an entity adopts the fair value model but the fair value of a specific investment property cannot be measured reliably, IAS 40 dictates that the entity must measure that specific property using the cost model in IAS 16 until disposal.`
+    }
+  ],
+  "mock-4": [
+    {
+      id: 1,
+      type: "cr",
+      topic: "Constructed Response (Section C)",
+      text: "Delta, a listed entity with several subsidiaries, is preparing its financial statements for the year ended 30 June 20X3.\n\nThe following exhibits, available on the left-hand side of the screen, provide information relevant to the question:\n1. Customer contract - information relating to a contract to construct a manufacturing facility for customer C.\n2. Share portfolio - information relating to a share portfolio of a subsidiary acquired during the accounting period.\n3. Ethics - details of potential ethical issues for a trainee accountant.\n\nThis information should be used to answer the question requirements within your chosen response option(s).",
+      exhibits: [
+        {
+          title: "1. Customer contract",
+          content: "<p>Delta entered into a contract to construct a specialised manufacturing facility for Customer C on 1 January 20X3. The total contract price is $10 million. Delta has incurred costs of $2 million up to 30 June 20X3.</p><p>Delta estimates that the total costs to complete the contract will be $6 million.</p>"
+        },
+        {
+          title: "2. Share portfolio",
+          content: "<p>On 1 January 20X3, Delta acquired a 100% subsidiary. The subsidiary holds a portfolio of equity investments with a fair value of $5 million at acquisition. These are held for trading.</p>"
+        },
+        {
+          title: "3. Ethics",
+          content: "<p>A trainee accountant has been asked to record the construction contract revenue fully in the current year to ensure the manager receives a bonus.</p>"
+        }
+      ],
+      requirements: [
+        {
+          title: "Requirements (25 marks)",
+          content: "<p><strong>(a)</strong> Explain the accounting treatment of the customer contract in the financial statements of Delta for the year ended 30 June 20X3. (10 marks)</p><p><strong>(b)</strong> Explain the accounting treatment of the share portfolio. (5 marks)</p><p><strong>(c)</strong> Discuss the ethical issues raised. (10 marks)</p>"
+        }
+      ],
+      responseOptions: ["word", "spreadsheet"],
+      marks: 25
     }
   ]
 };

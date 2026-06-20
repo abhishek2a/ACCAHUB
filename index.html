@@ -6,6 +6,20 @@
   <title>ACCA FR Portal</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Quill Word Processor -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+  <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+  <!-- Jspreadsheet (Excel) -->
+  <script src="https://bossanova.uk/jspreadsheet/v4/jexcel.js"></script>
+  <link rel="stylesheet" href="https://bossanova.uk/jspreadsheet/v4/jexcel.css" type="text/css" />
+  <script src="https://jsuites.net/v4/jsuites.js"></script>
+  <link rel="stylesheet" href="https://jsuites.net/v4/jsuites.css" type="text/css" />
+
+  <!-- html2canvas and jsPDF for Certificate -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -201,27 +215,11 @@
               </li>
               <li style="display:flex; flex-direction:column; gap:5px;">
                 <strong>Chapter 3: IAS 40 Investment Property</strong>
-                <span style="color:var(--text-light); font-size:12px;">4 Questions • 8 Marks • 10 Minutes</span>
+                <span style="color:var(--text-light); font-size:12px;">14 Questions • 28 Marks • 30 Minutes</span>
                 <div style="display:flex; gap:10px; margin-top:5px;">
                   <button class="start-btn" onclick="startMock('mock-3', false)" style="margin-top:0;">Launch Timed Exam</button>
                   <button class="start-btn" onclick="startMock('mock-3', true)" style="margin-top:0; background:var(--bg-alt); color:var(--text-main); border:1px solid var(--border-color); box-shadow:none;">Practice Mode</button>
                 </div>
-              </li>
-            </ul>
-          </div>
-          
-          <div class="hub-card">
-            <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 20px;">Full Exam Mocks</h3>
-            <ul class="resource-list">
-              <li>
-                <strong style="color:var(--text-light);">FR Full Mock Exam 1</strong><br>
-                <span style="color:var(--text-light); font-size:12px;">Section A, B, C • 100 Marks • 3 Hours</span>
-                <button class="start-btn" disabled style="opacity: 0.5;">Locked</button>
-              </li>
-              <li>
-                <strong style="color:var(--text-light);">FR Full Mock Exam 2</strong><br>
-                <span style="color:var(--text-light); font-size:12px;">Section A, B, C • 100 Marks • 3 Hours</span>
-                <button class="start-btn" disabled style="opacity: 0.5;">Locked</button>
               </li>
             </ul>
           </div>
@@ -299,18 +297,22 @@
         <div style="font-size: 14px;">Financial Reporting (FR)</div>
       </div>
       <div class="cbe-tools">
-        <button class="cbe-tool-btn" id="calc-tool"><i data-lucide="calculator" style="width:14px;"></i> Calculator</button>
+        <button class="cbe-tool-btn" id="symbol-tool"><i data-lucide="dollar-sign" style="width:14px;"></i> Symbol</button>
         <button class="cbe-tool-btn" id="highlight-tool"><i data-lucide="highlighter" style="width:14px;"></i> Highlight</button>
+        <button class="cbe-tool-btn" id="strikethrough-tool"><i data-lucide="strikethrough" style="width:14px;"></i> Strikethrough</button>
+        <button class="cbe-tool-btn" id="calc-tool"><i data-lucide="calculator" style="width:14px;"></i> Calculator</button>
         <button class="cbe-tool-btn" id="scratchpad-tool"><i data-lucide="edit-3" style="width:14px;"></i> Scratch Pad</button>
-        <button class="cbe-tool-btn"><i data-lucide="flag" style="width:14px;"></i> Flag for Review</button>
+        <button class="cbe-tool-btn" id="flag-tool"><i data-lucide="flag" style="width:14px;"></i> Flag for Review</button>
       </div>
       <div class="cbe-timer" id="timer-display">36:00</div>
     </div>
 
-    <div class="cbe-content-area">
-      <div class="cbe-question-box">
+    <div class="cbe-content-area" style="flex-direction: column; align-items: center; justify-content: flex-start;">
+      
+      <!-- MCQ Layout -->
+      <div id="mcq-layout" class="cbe-question-box">
         <div class="cbe-question-header">
-          Question <span id="current-q-num">1</span> of 15
+          Question <span id="current-q-num">1</span> of <span id="total-q-num">15</span>
         </div>
         <div class="cbe-question-body">
           <div id="question-text" class="cbe-q-text"></div>
@@ -320,17 +322,76 @@
             <textarea id="interpretation-input" style="width: 100%; height: 100px; padding: 10px; background: var(--bg-main); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 4px; font-family: inherit; resize: vertical;" placeholder="Type your step-by-step logic here..."></textarea>
           </div>
         </div>
-        <div class="cbe-bottombar">
-          <div>
-            <button id="prev-btn" class="cbe-nav-btn">Previous</button>
-            <button id="nav-btn" class="cbe-nav-btn" style="margin-left: 10px;"><i data-lucide="menu" style="width:14px;"></i> Navigator</button>
+      </div>
+
+      <!-- Section B Layout (Split View) -->
+      <div id="section-b-layout" class="cbe-section-b-box hidden">
+        <div class="section-b-pane section-b-left">
+          <div class="cbe-question-header">Scenario</div>
+          <div id="sec-b-scenario-text" class="cbe-q-text" style="font-size: 16px; line-height: 1.6;"></div>
+        </div>
+        <div class="section-b-pane section-b-right">
+          <div class="cbe-question-header">
+            Question <span id="sec-b-current-q-num">1</span> of <span id="sec-b-total-q-num">15</span>
           </div>
-          <div>
-            <button id="next-btn" class="cbe-nav-btn">Next</button>
-            <button id="submit-exam-btn" class="cbe-nav-btn primary hidden">Submit Exam</button>
+          <div class="cbe-question-body">
+            <div id="sec-b-question-text" class="cbe-q-text"></div>
+            <div id="sec-b-options-container" class="cbe-options"></div>
+            <div id="sec-b-interpretation-container" class="hidden" style="margin-top: 30px; border-top: 1px dashed var(--border-color); padding-top: 20px;">
+              <label style="font-weight: bold; margin-bottom: 10px; display: block; color: var(--acca-red);">Practice Mode: Your Interpretation / Working</label>
+              <textarea id="sec-b-interpretation-input" style="width: 100%; height: 100px; padding: 10px; background: var(--bg-main); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 4px; font-family: inherit; resize: vertical;" placeholder="Type your step-by-step logic here..."></textarea>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- Constructed Response Layout -->
+      <div id="cr-layout" class="cr-container hidden">
+        <div class="cr-header" style="background:var(--bg-alt); padding:8px 15px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-weight:bold;">Diploma in International Financial Reporting (IFR - INT) Sample Questions - December 2024</span>
+          <span>Question <span id="cr-current-q-num">1</span> of <span id="cr-total-q-num">15</span></span>
+        </div>
+        <div class="cr-body">
+          <div class="cr-sidebar">
+            <div class="cr-section">
+              <h4 class="cr-section-title">Exhibits</h4>
+              <div id="cr-exhibits-list" class="cr-section-list"></div>
+            </div>
+            <div class="cr-section">
+              <h4 class="cr-section-title">Requirements</h4>
+              <div id="cr-requirements-list" class="cr-section-list"></div>
+            </div>
+            <div class="cr-section">
+              <h4 class="cr-section-title">Response Options</h4>
+              <div id="cr-response-list" class="cr-section-list"></div>
+            </div>
+          </div>
+          <div class="cr-main" id="cr-main-area">
+            <div id="cr-scenario-text" class="cr-scenario-box"></div>
+            
+            <!-- Response Containers -->
+            <div id="cr-word-container" class="cr-tool-container hidden">
+              <div id="cr-word-editor"></div>
+            </div>
+            <div id="cr-spreadsheet-container" class="cr-tool-container hidden">
+              <div id="cr-spreadsheet-editor"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shared Bottom Bar -->
+      <div class="cbe-bottombar" style="margin-top: auto; border-top: 1px solid var(--border-color); width: 100%; background: var(--panel-bg); display: flex; justify-content: space-between; padding: 15px 30px;">
+        <div>
+          <button id="prev-btn" class="cbe-nav-btn"><i data-lucide="arrow-left" style="width:14px;"></i> Previous</button>
+          <button id="nav-btn" class="cbe-nav-btn" style="margin-left: 10px;"><i data-lucide="grid" style="width:14px;"></i> Navigator</button>
+        </div>
+        <div>
+          <button id="next-btn" class="cbe-nav-btn">Next <i data-lucide="arrow-right" style="width:14px;"></i></button>
+          <button id="submit-exam-btn" class="cbe-nav-btn primary hidden">Submit Exam</button>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -351,11 +412,61 @@
         <h2>Score: <span id="final-score" class="text-red">0/30</span> (<span id="score-percent">0%</span>)</h2>
       </div>
 
+      <div id="certificate-wrapper" class="hidden" style="display: flex; flex-direction: column; align-items: center; margin-bottom: 40px; width: 100%;">
+        <div style="background: var(--bg-alt); border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; text-align: center;">
+          <h3 style="margin-bottom: 10px; color: var(--text-main);">Congratulations on passing!</h3>
+          <p style="margin-bottom: 20px; color: var(--text-light);">You have earned a Certificate of Achievement.</p>
+          <button id="download-cert-btn" class="cbe-nav-btn primary"><i data-lucide="download" style="width:16px;"></i> Download Certificate as PDF</button>
+        </div>
+      </div>
+
       <div class="cbe-question-box" style="padding: 30px;">
         <h3 style="margin-bottom: 20px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">Detailed Answer Review</h3>
         <div id="review-list"></div>
       </div>
     </div>
+  </div>
+
+  <!-- Certificate Template (Hidden from view but kept in DOM for html2canvas) -->
+  <div id="certificate-container" style="background: #fff; width: 800px; padding: 40px; border: 15px solid #d4af37; outline: 5px solid #e1251b; outline-offset: -10px; text-align: center; font-family: 'Times New Roman', serif; position: absolute; left: -9999px; top: 0; color: #000;">
+    <h1 style="color: #e1251b; font-size: 40px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px;">Certificate of Achievement</h1>
+    <h3 style="font-size: 20px; font-weight: normal; color: #333; margin-bottom: 40px;">This certifies that</h3>
+    <h2 id="cert-student-name" style="font-size: 36px; border-bottom: 2px solid #ccc; display: inline-block; padding: 0 40px 10px; margin-bottom: 30px;">Student Name</h2>
+    <h3 style="font-size: 20px; font-weight: normal; color: #333; margin-bottom: 20px;">has successfully passed the</h3>
+    <h2 id="cert-exam-name" style="font-size: 28px; color: #e1251b; margin-bottom: 30px;">ACCA FR Mock Exam</h2>
+    <div style="display: flex; justify-content: space-around; margin-top: 50px;">
+      <div>
+        <p style="font-size: 18px; border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 5px;"><span id="cert-score">0%</span></p>
+        <p style="font-size: 14px; color: #555;">Pass Mark</p>
+      </div>
+      <div>
+        <p style="font-size: 18px; border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 5px;"><span id="cert-date">Date</span></p>
+        <p style="font-size: 14px; color: #555;">Date of Achievement</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Symbol Widget -->
+  <div id="symbol-widget" class="hidden" style="position: absolute; top: 100px; left: 100px; width: 250px; background: var(--bg-alt); border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.4); z-index: 100; color: var(--text-main);">
+    <div id="symbol-header" style="background: #e2e8f0; color: #333; padding: 5px 10px; cursor: move; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: bold; border-bottom: 1px solid var(--border-color);">
+      <span>Symbols</span>
+      <button id="close-symbol" style="background: none; border: none; cursor: pointer; color: #333;"><i data-lucide="x" style="width:12px;"></i></button>
+    </div>
+    <div style="padding: 10px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; text-align: center;">
+      <button class="symbol-btn" style="padding: 10px; font-size: 16px; cursor: pointer;">£</button>
+      <button class="symbol-btn" style="padding: 10px; font-size: 16px; cursor: pointer;">$</button>
+      <button class="symbol-btn" style="padding: 10px; font-size: 16px; cursor: pointer;">€</button>
+      <button class="symbol-btn" style="padding: 10px; font-size: 16px; cursor: pointer;">¥</button>
+      <button class="symbol-btn" style="padding: 10px; font-size: 16px; cursor: pointer;">÷</button>
+      <button class="symbol-btn" style="padding: 10px; font-size: 16px; cursor: pointer;">×</button>
+      <button class="symbol-btn" style="padding: 10px; font-size: 16px; cursor: pointer;">±</button>
+      <button class="symbol-btn" style="padding: 10px; font-size: 16px; cursor: pointer;">°</button>
+      <button class="symbol-btn" style="padding: 10px; font-size: 16px; cursor: pointer;">≤</button>
+      <button class="symbol-btn" style="padding: 10px; font-size: 16px; cursor: pointer;">≥</button>
+      <button class="symbol-btn" style="padding: 10px; font-size: 16px; cursor: pointer;">%</button>
+      <button class="symbol-btn" style="padding: 10px; font-size: 16px; cursor: pointer;">µ</button>
+    </div>
+    <div id="symbol-feedback" style="font-size: 11px; color: green; text-align: center; padding-bottom: 5px; height: 16px;"></div>
   </div>
 
   <!-- Calculator Widget -->
@@ -411,6 +522,16 @@
     </div>
     <div style="padding: 10px;">
       <textarea id="scratchpad-textarea" style="width: 100%; height: 250px; background: var(--panel-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 10px; font-family: inherit; font-size: 14px; resize: none;" placeholder="Type your notes here..."></textarea>
+    </div>
+  </div>
+
+  <!-- CR Exhibit Modal -->
+  <div id="cr-modal-widget" class="hidden" style="position: absolute; top: 100px; left: 100px; width: 600px; background: var(--bg-main); border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.4); z-index: 105; border-radius: 4px; overflow: hidden;">
+    <div id="cr-modal-header" style="background: var(--bg-alt); padding: 8px 10px; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; cursor: move; border-bottom: 1px solid var(--border-color); color: var(--text-main);">
+      <span id="cr-modal-title">Exhibit</span>
+      <button id="close-cr-modal" style="cursor: pointer; border: none; background: none; color: var(--text-main);"><i data-lucide="x" style="width:14px;"></i></button>
+    </div>
+    <div id="cr-modal-body" style="padding: 15px; height: 400px; overflow-y: auto; background: var(--panel-bg); color: var(--text-main); line-height: 1.6; font-size: 14px;">
     </div>
   </div>
 

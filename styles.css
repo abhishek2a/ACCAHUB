@@ -166,7 +166,7 @@ body {
 .sign-in-btn {
   width: 100%;
   padding: 14px;
-  background-color: var(--border-color); /* Disabled state */
+  background-color: var(--border-color);
   color: var(--text-light);
   border: none;
   font-size: 16px;
@@ -187,7 +187,6 @@ body {
   box-shadow: 0 6px 12px rgba(204, 0, 0, 0.3);
 }
 
-/* --- ACCA Study Hub Layout (Sidebar + Content) --- */
 #dashboard-screen, #analytics-screen {
   display: flex;
   min-height: 100vh;
@@ -249,7 +248,6 @@ body {
   padding-bottom: 15px;
 }
 
-/* Hub Grid */
 .hub-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -327,26 +325,17 @@ body {
 }
 
 .cbe-topbar {
-  background-color: var(--cbe-header);
-  color: white;
+  background: #000000;
+  color: #ffffff;
+  padding: 0 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
-  height: 55px;
+  border-bottom: 2px solid #555;
 }
 
 .cbe-brand {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.cbe-logo {
-  background-color: var(--acca-red);
-  padding: 6px 12px;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-weight: 600;
   font-size: 18px;
 }
 
@@ -356,19 +345,19 @@ body {
 }
 
 .cbe-tool-btn {
-  background: #222;
+  background: #2a2a2a;
   border: none;
-  border-right: 1px solid #333;
-  color: #ddd;
+  border-right: 1px solid #444;
+  color: #ffffff;
   padding: 0 15px;
-  height: 55px;
+  height: 50px;
   font-size: 13px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
 }
-.cbe-tool-btn:hover { background: #333; color: white; }
+.cbe-tool-btn:hover { background: #444444; }
 
 .cbe-timer {
   font-size: 20px;
@@ -406,7 +395,7 @@ body {
 .cbe-question-body {
   padding: 40px;
   flex-grow: 1;
-  font-family: Arial, Helvetica, sans-serif; /* Authentic exam font */
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 16px;
   color: var(--text-main);
   min-height: 400px;
@@ -438,26 +427,55 @@ body {
 }
 
 .cbe-bottombar {
-  background: var(--bg-alt);
-  border-top: 1px solid var(--border-color);
+  background: #000000;
   padding: 15px 30px;
   display: flex;
   justify-content: space-between;
+  color: #ffffff;
 }
 
 .cbe-nav-btn {
-  background: var(--panel-bg);
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
+  background: #2a2a2a;
+  border: 1px solid #555;
+  color: #ffffff;
   padding: 10px 25px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
   border-radius: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
-.cbe-nav-btn:hover { background: var(--bg-main); }
-.cbe-nav-btn.primary { background: var(--text-main); color: var(--bg-main); border-color: var(--text-main); }
+.cbe-nav-btn:hover { background: #444444; }
+.cbe-nav-btn.primary { background: #4caf50; color: #ffffff; border-color: #4caf50; }
 .cbe-nav-btn.primary:hover { opacity: 0.9; }
+
+/* Section B Layout */
+.cbe-section-b-box {
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  flex-grow: 1;
+}
+
+.section-b-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.section-b-left {
+  border-right: 2px solid var(--border-color);
+  background: var(--bg-alt);
+}
+
+.section-b-right {
+  background: var(--panel-bg);
+}
 
 /* Calculator Widget */
 #calculator-widget {
@@ -477,8 +495,16 @@ body {
 .calc-btn { padding: 12px; border: 1px solid var(--border-color); background: var(--panel-bg); color: var(--text-main); cursor: pointer; font-size: 18px; font-weight: 800;}
 .calc-btn:hover { background: var(--border-color); }
 
-/* Highlighter utility */
-.highlighted-text { background-color: #ffff00; color: #000; }
+/* Highlighter & Strikethrough utility */
+.highlighted-text {
+  background-color: yellow;
+  color: black;
+}
+
+.strikethrough-text {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
 
 /* --- Results / Analytics specific styles --- */
 .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 40px; }
@@ -494,3 +520,124 @@ body {
 .review-opt { padding: 12px 15px; border: 1px solid #eee; margin-bottom: 8px; border-radius: 2px;}
 .review-opt.is-correct { background: #eaffea; border-color: #008a00; color: #006600;}
 .review-opt.is-user-wrong { background: #ffeaea; border-color: #cc0000; color: #aa0000;}
+
+/* --- Constructed Response (CR) Split-pane Layout --- */
+.cr-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  flex-grow: 1;
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.cr-body {
+  display: flex;
+  flex-grow: 1;
+  height: 100%;
+  overflow: hidden;
+}
+
+.cr-sidebar {
+  width: 250px;
+  min-width: 250px;
+  border-right: 1px solid var(--border-color);
+  background: var(--bg-main);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.cr-section {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.cr-section-title {
+  padding: 10px 15px;
+  margin: 0;
+  font-size: 14px;
+  background: var(--bg-main);
+  color: var(--text-main);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.cr-section-list {
+  background: var(--panel-bg);
+}
+
+.cr-item-btn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 10px 15px;
+  background: var(--panel-bg);
+  border: none;
+  border-bottom: 1px solid #f0f0f0;
+  text-align: left;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-main);
+}
+.cr-item-btn:hover {
+  background: var(--hover-bg);
+}
+.cr-item-btn.active {
+  background: #e8e8e8;
+  font-weight: bold;
+}
+.cr-item-icon {
+  margin-right: 8px;
+  width: 14px;
+}
+
+.cr-main {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: var(--panel-bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.cr-scenario-box {
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-main);
+}
+
+.cr-tool-container {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+#cr-spreadsheet-container {
+  flex: 1;
+  overflow: auto;
+  max-width: 100%;
+}
+
+/* Jspreadsheet tweaks to fit theme */
+.jexcel_container {
+  background: #fff;
+  color: #333;
+}
+
+/* Anti-Print */
+@media print {
+  body {
+    display: none !important;
+  }
+}
+
+/* Anti-Snipping Tool Overlay */
+.blur-screen {
+  filter: blur(15px) !important;
+  opacity: 0.1 !important;
+  user-select: none !important;
+  pointer-events: none !important;
+}

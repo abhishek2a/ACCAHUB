@@ -101,11 +101,21 @@ document.addEventListener('DOMContentLoaded', () => {
   // Tools
   const calcTool = document.getElementById('calc-tool');
   const highlightTool = document.getElementById('highlight-tool');
+  const strikethroughTool = document.getElementById('strikethrough-tool');
+  const flagTool = document.getElementById('flag-tool');
+  const symbolTool = document.getElementById('symbol-tool');
+  const symbolWidget = document.getElementById('symbol-widget');
+  const closeSymbol = document.getElementById('close-symbol');
   const calcWidget = document.getElementById('calculator-widget');
   const closeCalc = document.getElementById('close-calc');
   const scratchpadTool = document.getElementById('scratchpad-tool');
   const scratchpadWidget = document.getElementById('scratchpad-widget');
   const closeScratchpad = document.getElementById('close-scratchpad');
+
+  // Layouts
+  const mcqLayout = document.getElementById('mcq-layout');
+  const sectionBLayout = document.getElementById('section-b-layout');
+  const crLayout = document.getElementById('cr-layout');
 
   // Results Output
   const reviewListContainer = document.getElementById('review-list');
@@ -122,6 +132,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Define questions as empty initially, will be populated on startMock
   let questions = [];
   let isHighlightMode = false;
+  let isStrikethroughMode = false;
+  let flaggedQuestions = [];
   let userDataCache = { history: [], topics: {} };
 
   // --- View Management ---
@@ -407,6 +419,37 @@ document.addEventListener('DOMContentLoaded', () => {
     showScreen('dashboard');
   });
 
+  // --- Certificate Download Logic ---
+  const downloadCertBtn = document.getElementById('download-cert-btn');
+  if (downloadCertBtn) {
+    downloadCertBtn.addEventListener('click', () => {
+      const certContainer = document.getElementById('certificate-container');
+      const originalOutline = certContainer.style.outline;
+      
+      // Temporary style adjustments for better html2canvas rendering
+      certContainer.style.outline = 'none';
+      
+      html2canvas(certContainer, { scale: 2 }).then(canvas => {
+        certContainer.style.outline = originalOutline;
+        
+        const imgData = canvas.toDataURL('image/png');
+        // 'l' = landscape
+        const pdf = new window.jspdf.jsPDF('l', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        
+        // Center the certificate vertically if the a4 page is taller than the certificate
+        let yOffset = 0;
+        if (pdfHeight < pdf.internal.pageSize.getHeight()) {
+          yOffset = (pdf.internal.pageSize.getHeight() - pdfHeight) / 2;
+        }
+
+        pdf.addImage(imgData, 'PNG', 0, yOffset, pdfWidth, pdfHeight);
+        pdf.save(`ACCA_Certificate_${currentMockId}.pdf`);
+      });
+    });
+  }
+
   // --- Exam Logic ---
   // --- Exam Logic ---
   window.startMock = function(mockId, practice) {
@@ -414,25 +457,41 @@ document.addEventListener('DOMContentLoaded', () => {
     isPracticeMode = practice;
     questions = mockExams[mockId];
     
+    const totalQNumElement = document.getElementById('total-q-num');
+    if (totalQNumElement) {
+      totalQNumElement.textContent = questions.length;
+    }
+    
     currentQuestionIndex = 0;
     userAnswers = new Array(questions.length).fill(null);
     userInterpretations = new Array(questions.length).fill('');
+    
+    // Tear down existing tool instances to prevent memory leaks and state bleed
+    if (quillInstance) {
+      document.getElementById('cr-word-editor').innerHTML = '';
+      quillInstance = null;
+    }
+    if (spreadsheetInstance) {
+      spreadsheetInstance.destroy();
+      spreadsheetInstance = null;
+    }
     
     if (mockId === 'mock-1') {
       timeRemaining = 36 * 60; // 36 minutes
     } else if (mockId === 'mock-2') {
       timeRemaining = 12 * 60; // 12 minutes
     } else if (mockId === 'mock-3') {
-      timeRemaining = 10 * 60; // 10 minutes
+      timeRemaining = 30 * 60; // 30 minutes
     }
     
-    const timerDisplay = document.getElementById('timer-display');
     if (isPracticeMode) {
-      timerDisplay.textContent = "Practice Mode";
-      clearInterval(timerInterval);
-    } else {
-      startTimer();
+      timeRemaining += 15 * 60; // Add 15 extra minutes for practice mode interpretation
     }
+    
+    flaggedQuestions = new Array(questions.length).fill(false);
+    updateFlagButtonState();
+    
+    startTimer();
     
     renderQuestion();
     showScreen('exam');
@@ -457,8 +516,78 @@ document.addEventListener('DOMContentLoaded', () => {
     timerDisplay.textContent = `${m}:${s}`;
   }
 
-  function renderQuestion() {
+  let quillInstance = null;
+  let spreadsheetInstance = null;
+
+  function saveCurrentCRAnswer() {
     const q = questions[currentQuestionIndex];
+    if (q && q.type === 'cr') {
+      if (!userAnswers[currentQuestionIndex]) userAnswers[currentQuestionIndex] = {};
+      if (quillInstance) {
+        userAnswers[currentQuestionIndex].word = quillInstance.root.innerHTML;
+      }
+      if (spreadsheetInstance) {
+        userAnswers[currentQuestionIndex].spreadsheet = spreadsheetInstance.getData();
+      }
+    }
+  }
+
+  function renderQuestion() {
+    // Save CR responses before re-rendering
+    saveCurrentCRAnswer();
+
+    const q = questions[currentQuestionIndex];
+    
+    if (q.type === 'cr') {
+      mcqLayout.classList.add('hidden');
+      sectionBLayout.classList.add('hidden');
+      crLayout.classList.remove('hidden');
+      renderCrQuestion(q);
+    } else if (q.section === 'B') {
+      mcqLayout.classList.add('hidden');
+      crLayout.classList.add('hidden');
+      sectionBLayout.classList.remove('hidden');
+      renderSectionBQuestion(q);
+    } else {
+      crLayout.classList.add('hidden');
+      sectionBLayout.classList.add('hidden');
+      mcqLayout.classList.remove('hidden');
+      renderMcqQuestion(q);
+    }
+
+    prevBtn.disabled = currentQuestionIndex === 0;
+    
+    if (currentQuestionIndex === questions.length - 1) {
+      nextBtn.classList.add('hidden');
+      submitExamBtn.classList.remove('hidden');
+    } else {
+      nextBtn.classList.remove('hidden');
+      submitExamBtn.classList.add('hidden');
+    }
+
+    updateFlagButtonState();
+  }
+
+  function updateFlagButtonState() {
+    if (!flagTool) return;
+    if (flaggedQuestions[currentQuestionIndex]) {
+      flagTool.style.background = '#444';
+      flagTool.innerHTML = '<i data-lucide="flag" style="width:14px; fill:currentColor;"></i> Flagged';
+    } else {
+      flagTool.style.background = '#2a2a2a';
+      flagTool.innerHTML = '<i data-lucide="flag" style="width:14px;"></i> Flag for Review';
+    }
+    lucide.createIcons();
+  }
+
+  if (flagTool) {
+    flagTool.addEventListener('click', () => {
+      flaggedQuestions[currentQuestionIndex] = !flaggedQuestions[currentQuestionIndex];
+      updateFlagButtonState();
+    });
+  }
+
+  function renderMcqQuestion(q) {
     currentQNumDisplay.textContent = currentQuestionIndex + 1;
     questionTextContainer.innerHTML = escapeHTML(q.text);
     
@@ -499,16 +628,197 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       interpretationContainer.classList.add('hidden');
     }
+  }
 
-    prevBtn.disabled = currentQuestionIndex === 0;
+  function renderSectionBQuestion(q) {
+    document.getElementById('sec-b-current-q-num').textContent = currentQuestionIndex + 1;
+    document.getElementById('sec-b-scenario-text').innerHTML = escapeHTML(q.scenario || '').replace(/\n/g, '<br>');
+    document.getElementById('sec-b-question-text').innerHTML = escapeHTML(q.text);
     
-    if (currentQuestionIndex === questions.length - 1) {
-      nextBtn.classList.add('hidden');
-      submitExamBtn.classList.remove('hidden');
+    const optionsContainer = document.getElementById('sec-b-options-container');
+    optionsContainer.innerHTML = '';
+    q.options.forEach((opt) => {
+      const letter = opt.charAt(0);
+      
+      const optionLabel = document.createElement('label');
+      optionLabel.className = 'cbe-option';
+      
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = `sec-b-question-${currentQuestionIndex}`;
+      radio.value = letter;
+      
+      if (userAnswers[currentQuestionIndex] === letter) {
+        radio.checked = true;
+      }
+      
+      radio.addEventListener('change', () => {
+        userAnswers[currentQuestionIndex] = letter;
+      });
+      
+      const textSpan = document.createElement('span');
+      textSpan.textContent = opt;
+      
+      optionLabel.appendChild(radio);
+      optionLabel.appendChild(textSpan);
+      optionsContainer.appendChild(optionLabel);
+    });
+
+    const interpretationContainer = document.getElementById('sec-b-interpretation-container');
+    const interpretationInput = document.getElementById('sec-b-interpretation-input');
+    
+    if (isPracticeMode) {
+      interpretationContainer.classList.remove('hidden');
+      interpretationInput.value = userInterpretations[currentQuestionIndex] || '';
+      
+      const newInterpretationInput = interpretationInput.cloneNode(true);
+      interpretationInput.parentNode.replaceChild(newInterpretationInput, interpretationInput);
+      newInterpretationInput.addEventListener('input', () => {
+        userInterpretations[currentQuestionIndex] = newInterpretationInput.value;
+      });
     } else {
-      nextBtn.classList.remove('hidden');
-      submitExamBtn.classList.add('hidden');
+      interpretationContainer.classList.add('hidden');
     }
+  }
+
+  function renderCrQuestion(q) {
+    document.getElementById('cr-current-q-num').textContent = currentQuestionIndex + 1;
+    document.getElementById('cr-scenario-text').innerHTML = escapeHTML(q.text).replace(/\n/g, '<br>');
+    
+    // Clear tools
+    document.getElementById('cr-word-container').classList.add('hidden');
+    document.getElementById('cr-spreadsheet-container').classList.add('hidden');
+    document.getElementById('cr-scenario-text').classList.remove('hidden');
+    
+    // Populate Exhibits
+    const exhibitsList = document.getElementById('cr-exhibits-list');
+    exhibitsList.innerHTML = '';
+    (q.exhibits || []).forEach((ex, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'cr-item-btn';
+      btn.innerHTML = `<i data-lucide="file-text" class="cr-item-icon"></i> ${ex.title}`;
+      btn.onclick = () => openCrModal(ex.title, ex.content);
+      exhibitsList.appendChild(btn);
+    });
+
+    // Populate Requirements
+    const reqsList = document.getElementById('cr-requirements-list');
+    reqsList.innerHTML = '';
+    (q.requirements || []).forEach((req, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'cr-item-btn';
+      btn.innerHTML = `<i data-lucide="help-circle" class="cr-item-icon"></i> ${req.title}`;
+      btn.onclick = () => openCrModal(req.title, req.content);
+      reqsList.appendChild(btn);
+    });
+
+    // Populate Response Options
+    const respList = document.getElementById('cr-response-list');
+    respList.innerHTML = '';
+    (q.responseOptions || []).forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'cr-item-btn';
+      if (opt === 'word') {
+        btn.innerHTML = `<i data-lucide="file-edit" class="cr-item-icon"></i> Word Processor`;
+        btn.onclick = () => openCrTool('word', q);
+      } else if (opt === 'spreadsheet') {
+        btn.innerHTML = `<i data-lucide="grid" class="cr-item-icon"></i> Spreadsheet`;
+        btn.onclick = () => openCrTool('spreadsheet', q);
+      }
+      respList.appendChild(btn);
+    });
+    
+    lucide.createIcons();
+  }
+
+  function openCrModal(title, content) {
+    const modal = document.getElementById('cr-modal-widget');
+    document.getElementById('cr-modal-title').textContent = title;
+    document.getElementById('cr-modal-body').innerHTML = content;
+    modal.classList.remove('hidden');
+  }
+
+  function openCrTool(tool, q) {
+    saveCurrentCRAnswer();
+    
+    document.getElementById('cr-scenario-text').classList.add('hidden');
+    document.getElementById('cr-word-container').classList.add('hidden');
+    document.getElementById('cr-spreadsheet-container').classList.add('hidden');
+    
+    // Initialize Answer Object if empty
+    if (!userAnswers[currentQuestionIndex]) {
+      userAnswers[currentQuestionIndex] = {};
+    }
+
+    if (tool === 'word') {
+      document.getElementById('cr-word-container').classList.remove('hidden');
+      if (!quillInstance) {
+        quillInstance = new Quill('#cr-word-editor', {
+          theme: 'snow',
+          modules: {
+            toolbar: [
+              ['bold', 'italic', 'underline', 'strike'],
+              [{ 'header': 1 }, { 'header': 2 }],
+              [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+              [{ 'indent': '-1'}, { 'indent': '+1' }],
+              ['clean']
+            ]
+          }
+        });
+      }
+      quillInstance.root.innerHTML = userAnswers[currentQuestionIndex].word || '';
+    } else if (tool === 'spreadsheet') {
+      document.getElementById('cr-spreadsheet-container').classList.remove('hidden');
+      
+      if (spreadsheetInstance) {
+        spreadsheetInstance.destroy();
+      }
+      
+      spreadsheetInstance = jspreadsheet(document.getElementById('cr-spreadsheet-editor'), {
+        data: userAnswers[currentQuestionIndex].spreadsheet || [[]],
+        minDimensions: [10, 20],
+        toolbar: [
+          { type: 'i', content: 'format_bold', k: 'font-weight', v: 'bold' },
+          { type: 'i', content: 'format_italic', k: 'font-style', v: 'italic' },
+          { type: 'i', content: 'format_underline', k: 'text-decoration', v: 'underline' },
+          { type: 'color', content: 'format_color_text', k: 'color' },
+          { type: 'color', content: 'format_color_fill', k: 'background-color' },
+        ]
+      });
+    }
+  }
+
+  document.getElementById('close-cr-modal').addEventListener('click', () => {
+    document.getElementById('cr-modal-widget').classList.add('hidden');
+  });
+
+  // Make CR Modal Draggable
+  const crModalWidget = document.getElementById("cr-modal-widget");
+  const crModalHeader = document.getElementById("cr-modal-header");
+  let isCrModalDragging = false;
+  let crModalOffsetX, crModalOffsetY;
+
+  if (crModalHeader) {
+    crModalHeader.addEventListener('mousedown', (e) => {
+      isCrModalDragging = true;
+      crModalOffsetX = e.clientX - crModalWidget.getBoundingClientRect().left;
+      crModalOffsetY = e.clientY - crModalWidget.getBoundingClientRect().top;
+      document.addEventListener('mousemove', onCrModalMouseMove);
+      document.addEventListener('mouseup', onCrModalMouseUp);
+    });
+  }
+
+  function onCrModalMouseMove(e) {
+    if (!isCrModalDragging) return;
+    crModalWidget.style.left = `${e.clientX - crModalOffsetX}px`;
+    crModalWidget.style.top = `${e.clientY - crModalOffsetY}px`;
+    crModalWidget.style.right = 'auto';
+  }
+
+  function onCrModalMouseUp() {
+    isCrModalDragging = false;
+    document.removeEventListener('mousemove', onCrModalMouseMove);
+    document.removeEventListener('mouseup', onCrModalMouseUp);
   }
 
   // Save interpretation on input
@@ -546,7 +856,6 @@ document.addEventListener('DOMContentLoaded', () => {
       navigatorGrid.innerHTML = '';
       questions.forEach((q, i) => {
         const btn = document.createElement('button');
-        btn.textContent = i + 1;
         btn.style.padding = '10px';
         btn.style.border = '1px solid var(--border-color)';
         // Red if answered, alt bg if unanswered
@@ -554,6 +863,12 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.style.color = userAnswers[i] ? 'white' : 'var(--text-main)';
         btn.style.cursor = 'pointer';
         btn.style.borderRadius = '4px';
+        
+        let content = `${i + 1}`;
+        if (flaggedQuestions[i]) {
+           content += ` <i data-lucide="flag" style="width:12px; height:12px; margin-left: 4px; fill:currentColor;"></i>`;
+        }
+        btn.innerHTML = content;
         
         // Highlight current question
         if(i === currentQuestionIndex) {
@@ -568,6 +883,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         navigatorGrid.appendChild(btn);
       });
+      lucide.createIcons();
       navigatorWidget.classList.remove('hidden');
     });
 
@@ -756,6 +1072,24 @@ document.addEventListener('DOMContentLoaded', () => {
     
     document.getElementById('final-score').textContent = `${score}/${totalScore}`;
     document.getElementById('score-percent').textContent = `${percentage}%`;
+
+    // --- Certificate Logic ---
+    const certWrapper = document.getElementById('certificate-wrapper');
+    if (percentage >= 70) {
+      certWrapper.classList.remove('hidden');
+      const user = auth.currentUser;
+      let studentName = "Student";
+      if (user) {
+        studentName = user.displayName || user.email.split('@')[0];
+      }
+      document.getElementById('cert-student-name').textContent = studentName;
+      document.getElementById('cert-exam-name').textContent = currentMockId.toUpperCase().replace('-', ' ');
+      document.getElementById('cert-score').textContent = `${percentage}%`;
+      const dateStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+      document.getElementById('cert-date').textContent = dateStr;
+    } else {
+      certWrapper.classList.add('hidden');
+    }
   }
 
   // --- Render Analytics Page ---
@@ -819,45 +1153,109 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // --- Highlighter Logic ---
+  // --- Highlighter & Strikethrough Logic ---
   highlightTool.addEventListener('click', () => {
     isHighlightMode = !isHighlightMode;
-    if (isHighlightMode) {
-      highlightTool.style.background = '#333';
-    } else {
-      highlightTool.style.background = 'transparent';
-    }
+    isStrikethroughMode = false; // mutually exclusive
+    highlightTool.style.background = isHighlightMode ? '#444' : '#2a2a2a';
+    strikethroughTool.style.background = '#2a2a2a';
   });
 
-  questionTextContainer.addEventListener('mouseup', () => {
-    if (!isHighlightMode) return;
+  strikethroughTool.addEventListener('click', () => {
+    isStrikethroughMode = !isStrikethroughMode;
+    isHighlightMode = false; // mutually exclusive
+    strikethroughTool.style.background = isStrikethroughMode ? '#444' : '#2a2a2a';
+    highlightTool.style.background = '#2a2a2a';
+  });
+
+  const contentArea = document.querySelector('.cbe-content-area');
+  contentArea.addEventListener('mouseup', () => {
+    if (!isHighlightMode && !isStrikethroughMode) return;
     const selection = window.getSelection();
     if (!selection.isCollapsed) {
-      // Prevent highlighting inside already highlighted text
-      if (selection.anchorNode.parentNode && selection.anchorNode.parentNode.classList && selection.anchorNode.parentNode.classList.contains('highlighted-text')) return;
+      // Check if inside a valid text container
+      let validContainer = selection.anchorNode.parentNode.closest('.cbe-q-text, .cbe-options');
+      if (!validContainer) return;
+
+      const className = isHighlightMode ? 'highlighted-text' : 'strikethrough-text';
+      
+      // Prevent overlapping same class
+      if (selection.anchorNode.parentNode && selection.anchorNode.parentNode.classList && selection.anchorNode.parentNode.classList.contains(className)) return;
 
       const range = selection.getRangeAt(0);
       const span = document.createElement('span');
-      span.className = 'highlighted-text';
+      span.className = className;
       try {
         range.surroundContents(span);
         selection.removeAllRanges();
       } catch (e) {
-        console.warn("Could not highlight.", e);
+        console.warn("Could not modify text.", e);
       }
     }
   });
 
-  // Remove highlight on click
-  questionTextContainer.addEventListener('click', (e) => {
+  // Remove highlight/strikethrough on click
+  contentArea.addEventListener('click', (e) => {
     if (isHighlightMode && e.target.classList.contains('highlighted-text')) {
-      const parent = e.target.parentNode;
-      while (e.target.firstChild) {
-        parent.insertBefore(e.target.firstChild, e.target);
-      }
-      parent.removeChild(e.target);
+      unwrap(e.target);
+    } else if (isStrikethroughMode && e.target.classList.contains('strikethrough-text')) {
+      unwrap(e.target);
     }
   });
+
+  function unwrap(el) {
+    const parent = el.parentNode;
+    while (el.firstChild) parent.insertBefore(el.firstChild, el);
+    parent.removeChild(el);
+  }
+
+  // --- Symbol Widget Logic ---
+  symbolTool.addEventListener('click', () => {
+    symbolWidget.classList.toggle('hidden');
+  });
+  
+  closeSymbol.addEventListener('click', () => {
+    symbolWidget.classList.add('hidden');
+  });
+
+  document.querySelectorAll('.symbol-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const symbol = e.target.textContent;
+      navigator.clipboard.writeText(symbol).then(() => {
+        const feedback = document.getElementById('symbol-feedback');
+        feedback.textContent = `Copied ${symbol} to clipboard`;
+        setTimeout(() => feedback.textContent = '', 2000);
+      });
+    });
+  });
+
+  // Drag logic for symbol widget
+  const symbolHeader = document.getElementById("symbol-header");
+  let isSymbolDragging = false;
+  let symbolOffsetX, symbolOffsetY;
+
+  if (symbolHeader) {
+    symbolHeader.addEventListener('mousedown', (e) => {
+      isSymbolDragging = true;
+      symbolOffsetX = e.clientX - symbolWidget.getBoundingClientRect().left;
+      symbolOffsetY = e.clientY - symbolWidget.getBoundingClientRect().top;
+      document.addEventListener('mousemove', onSymbolMouseMove);
+      document.addEventListener('mouseup', onSymbolMouseUp);
+    });
+  }
+
+  function onSymbolMouseMove(e) {
+    if (!isSymbolDragging) return;
+    symbolWidget.style.left = `${e.clientX - symbolOffsetX}px`;
+    symbolWidget.style.top = `${e.clientY - symbolOffsetY}px`;
+    symbolWidget.style.right = 'auto';
+  }
+
+  function onSymbolMouseUp() {
+    isSymbolDragging = false;
+    document.removeEventListener('mousemove', onSymbolMouseMove);
+    document.removeEventListener('mouseup', onSymbolMouseUp);
+  }
 
   // --- Calculator Logic ---
   calcTool.addEventListener('click', () => {
@@ -1087,4 +1485,73 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   updateCountdown();
+
+  // --- Anti-Cheat & Anti-Screenshot Logic ---
+  document.addEventListener('keyup', (e) => {
+    if (e.key === 'PrintScreen') {
+      navigator.clipboard.writeText('');
+      alert("Screenshots are disabled for this portal.");
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    // Prevent Ctrl+S, Ctrl+P, Ctrl+U (View Source)
+    if (e.ctrlKey && (e.key === 'p' || e.key === 's' || e.key === 'u')) {
+      e.preventDefault();
+    }
+    // Prevent F12, Ctrl+Shift+I, Ctrl+Shift+J (Dev Tools)
+    if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j'))) {
+      e.preventDefault();
+    }
+    // Attempt to clear clipboard if Mac screenshot shortcuts are used (Cmd+Shift+3/4/5)
+    if (e.metaKey && e.shiftKey && (e.key === '3' || e.key === '4' || e.key === '5')) {
+      navigator.clipboard.writeText('');
+      setTimeout(() => alert("Screenshots are disabled for this portal."), 100);
+    }
+    // Attempt to clear clipboard if Windows Snipping Tool shortcuts are used (Win+Shift+S)
+    if (e.metaKey && e.shiftKey && e.key.toLowerCase() === 's') {
+      navigator.clipboard.writeText('');
+      setTimeout(() => alert("Screenshots are disabled for this portal."), 100);
+    }
+  });
+
+  // Prevent Right-Click (Context Menu)
+  document.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+  });
+
+  // Prevent Copying and Cutting text
+  document.addEventListener('copy', (e) => {
+    e.preventDefault();
+    alert("Copying text is not permitted during the exam.");
+  });
+  document.addEventListener('cut', (e) => {
+    e.preventDefault();
+  });
+
+  // Detect Tab Switching (Visibility API)
+  let cheatWarnings = 0;
+  document.addEventListener("visibilitychange", () => {
+    // Only warn if they are currently taking an exam (exam screen is visible)
+    const examScreen = document.getElementById('exam-screen');
+    if (document.hidden && examScreen && !examScreen.classList.contains('hidden') && !isPracticeMode) {
+      cheatWarnings++;
+      alert(`Warning: You have navigated away from the exam tab. This is violation #${cheatWarnings}. Repeated tab switching may result in exam termination.`);
+    }
+  });
+
+  // Anti-Snipping Tool / Screen Capture (Window Focus Loss)
+  // When external tools like Snipping Tool or OS screen capture are activated, the browser window loses focus.
+  window.addEventListener('blur', () => {
+    const examScreen = document.getElementById('exam-screen');
+    if (examScreen && !examScreen.classList.contains('hidden') && !isPracticeMode) {
+      // Blur the screen heavily so it cannot be captured
+      document.body.classList.add('blur-screen');
+    }
+  });
+
+  window.addEventListener('focus', () => {
+    // Restore the screen when the browser regains focus
+    document.body.classList.remove('blur-screen');
+  });
 });
